@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.lightrail</groupId>
-    <artifactId>lightrail-stripe-java</artifactId>
+    <artifactId>lightrail-stripe-client</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
 
