@@ -1,18 +1,18 @@
 # Lightrail Stripe Integration Library
 
 Lightrail is a modern platform for digital account credits, gift cards, promotions, and points.
-(To learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Stripe integration provides a client library for developers to easily use the Lightrail capabilities alongside [Stripe](https://stripe.com/). 
+(To learn more, visit [Lightrail](https://www.lightrail.com/)). The Lightrail Stripe integration provides a client library for developers to easily use Lightrail's features alongside [Stripe](https://stripe.com/).
 
 If you are looking for other specific use cases or other languages, check out [related projects](#related-projects). 
 
 ## Features ##
-- Simple order checkout which supports a gift code redemption alongside a Stripe payment.
+- Simple order checkout which supports gift code redemption alongside a Stripe payment.
 
 ## Usage ##
 
 ### Order Checkout Using `StripeGiftHybridCharge`
 
-`StripeGiftHybridCharge` is a class closely designed to resemble the behaviour of a Stripe `Charge` and transparently splits the transaction between a gift code and a stripe credit card. Here is a simple example:
+`StripeGiftHybridCharge` is a class closely designed to resemble the behaviour of a Stripe `Charge` and transparently splits the transaction between a gift code and a credit card to be charged by Stripe. Here is a simple example:
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -30,20 +30,20 @@ PaymentSummary paymentSummary = StripeGiftHybridCharge.simulate(hybridChargePara
 StripeGiftHybridCharge charge = StripeGiftHybridCharge.create(hybridChargeParams);
 ```
 
-If you don't pass a gift code parameter, the entire transaction will be charged on the credit card via Stripe. Similarly, if you don't pass a Stripe parameter, the library will attempt at charging the entire transaction on the gift code. The transaction will still go through if the value of the gift code is enough to cover paying for the entire transaction, otherwise you will receive a `BadParameterException` with a message asking for providing credit card payment parameters. 
+If you don't pass a gift code parameter, the entire transaction will be charged on the credit card via Stripe. Similarly, if you don't pass a Stripe token parameter, the library will attempt to charge the entire transaction on the gift code. The transaction will still go through if the value of the gift code is enough to cover the entire transaction, otherwise you will receive a `BadParameterException` with a message asking you to provide credit card payment parameters.
 
-Instead of a Stripe token, you may also pass a Stripe customer ID in which case the charge will be posted to that customer: 
+Instead of a Stripe token, you may also pass a Stripe Customer ID in which case the charge will be posted to that customer:
 
 ```Java
 hybridChargeParams.put("customer", "<STRIPE CUSTOMER ID>");
 ```
 
-When both a code and credit card parameters are provided, the library will try to split the payment between the two, in a way that the gift code value contributes to the payment as much as possible. This usually means:
+When both a code and credit card parameters are provided, the library will try to split the payment between the two, in such a way that the gift code value contributes to the payment as much as possible. This usually means:
 
 - If the gift code value is sufficient, the entire transaction will be charged on the gift code.
 
 
-- If the transaction amount is larger than the value of the gift code, entire value of the gift code will be  redeemed and the remainder goes on the credit card —unless the remainder is too small for a Stripe transaction in which case the split point is shifted just enough for the credit card's share of the transaction to meet the minimum requirements.
+- If the transaction amount is larger than the value of the gift code, the entire value of the gift code will be redeemed and the remainder will go on the credit card — unless the remainder is too small for a Stripe transaction in which case the split point is shifted just enough for the credit card's share of the transaction to meet the minimum requirements.
 
 The `simulate()` method returns a `PaymentSummary` object which demonstrates the intended plan for splitting the transaction between the gift code and the credit card. This provides a good way of showing the summary of the payment to the user to confirm. It can also be used for checking whether the gift code value will cover the entire transaction and determine whether you need to provide a Stripe payment parameter:
 
@@ -92,7 +92,7 @@ You can add this library as a dependency in your `maven` `POM` file as:
 ```
 
 ## Build And Test ##
-You can build  this library from source using `maven`. Assuming that `maven` is installed and configured in your environment, you can simply download or clone the source and invoke:
+You can build this library from source using `maven`. Assuming that `maven` is installed and configured in your environment, you can simply download or clone the source and invoke:
 ```sh
 $ mvn clean package -DskipTests
 ```
