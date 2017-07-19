@@ -11,7 +11,7 @@
     <url>https://github.com/Giftbit/lightrail-stripe-java</url>
     <scm>
         <connection>scm:git:git@github.com:Giftbit/lightrail-stripe-java.git</connection>
-        <developerConnection>scm:git:git@github.com:Giftbit/lightrail-stripe-client-java.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:Giftbit/lightrail-stripe-java.git</developerConnection>
         <url>git@github.com:Giftbit/lightrail-stripe-java.git</url>
     </scm>
 
