@@ -27,3 +27,6 @@ hs_err_pid*
 # Maven
 log/
 target/
+/release.properties
+/pom.xml.releaseBackup
+.DS_Store
