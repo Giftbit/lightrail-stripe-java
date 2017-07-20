@@ -87,7 +87,7 @@ You can add this library as a dependency in your `maven` `POM` file as:
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-stripe-client</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -119,7 +119,7 @@ The only dependecies of this library are `lightrail-client` and `stripe-java`.
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 <dependency>
   <groupId>com.stripe</groupId>
@@ -142,6 +142,6 @@ The following dependecy is also necessary if you want to run the unit tests.
 
 ## Changelog ## 
 
-### 1.0.0 ###
+### 1.0.1 ###
 - `StripeGiftHybridCharge` and `CheckoutWithGiftCode` class for easy order checkout alongside `Stripe`.
 
