@@ -1,18 +1,31 @@
 # Lightrail Stripe Integration Library
 
 Lightrail is a modern platform for digital account credits, gift cards, promotions, and points.
-(To learn more, visit [Lightrail](https://www.lightrail.com/)). The Lightrail Stripe integration provides a client library for developers to easily use Lightrail's features alongside [Stripe](https://stripe.com/).
+(To learn more, visit [Lightrail](https://www.lightrail.com/)). The Lightrail Stripe integration provides a client library for developers to easily use Lightrail's features alongside [Stripe](https://stripe.com/). This library is based on [Lightrail Java Client Library](https://github.com/Giftbit/lightrail-client-java).
 
-If you are looking for other specific use cases or other languages, check out [related projects](#related-projects). 
+If you are looking for specific use cases or other languages, check out [related projects](https://github.com/Giftbit/lightrail-client-java#related-projects). For a complete list of all Lightrail libraries and integrations, check out the [Lightrail Integration page](https://github.com/Giftbit/Lightrail-API-Docs/blob/usecases/Integrations.md).
 
 ## Features ##
-- Simple order checkout which supports gift code redemption alongside a Stripe payment.
+- Simple order checkout which supports Lightreail gift card redemption or account credits alongside a Stripe payment.
 
 ## Usage ##
 
-### Order Checkout Using `StripeGiftHybridCharge`
+### Order Checkout Using `StripeLightrailHybridCharge`
 
-`StripeGiftHybridCharge` is a class closely designed to resemble the behaviour of a Stripe `Charge` and transparently splits the transaction between a gift code and a credit card to be charged by Stripe. Here is a simple example:
+`StripeLightrailHybridCharge` is a class designed to resemble the interface of a Stripe `Charge` class which transparently splits the transaction between Lightrail and Stripe. The Lightrail parameter could be one of the following:
+
+- `code`, specifying a gift card by its code, 
+
+- `cardId`, specifying a gift card by its card ID, or
+
+- `lightrailCustomer`, specifying a customer account by its customer account ID. 
+
+The Stripe parameter could be:
+
+- `token`, indicating a Stripe token, or 
+- `customer`, indicating a Stripe customer ID. 
+
+Here is a simple example:
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -24,55 +37,51 @@ Map<String, Object> hybridChargeParams = new HashMap<>();
   hybridChargeParams.put("amount", 375);
   hybridChargeParams.put("token", "<STRIPE TOKEN>");
 
-PaymentSummary paymentSummary = StripeGiftHybridCharge.simulate(hybridChargeParams);
+PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
 //show summary to the user and confirm
 //...
-StripeGiftHybridCharge charge = StripeGiftHybridCharge.create(hybridChargeParams);
+StripeGiftHybridCharge charge = StripeLightrailHybridCharge.create(hybridChargeParams);
 ```
 
-If you don't pass a gift code parameter, the entire transaction will be charged on the credit card via Stripe. Similarly, if you don't pass a Stripe token parameter, the library will attempt to charge the entire transaction on the gift code. The transaction will still go through if the value of the gift code is enough to cover the entire transaction, otherwise you will receive a `BadParameterException` with a message asking you to provide credit card payment parameters.
+If you don't pass any Lightrail  parameter, the entire transaction will be charged to Stripe. Similarly, if you don't provide any Stripe parameter, the library will attempt to charge the entire transaction to Lightrail. If the value of the gift card or account credit is not enough to cover the entire transaction amount, you will receive a `BadParameterException` asking you to provide a Stripe parameter.
 
-Instead of a Stripe token, you may also pass a Stripe Customer ID in which case the charge will be posted to that customer:
+When both a Lightrail and Stripe credit card parameters are provided, the library will try to split the payment, in such a way that Lightrail contributes to the payment as much as possible. This usually means:
 
-```Java
-hybridChargeParams.put("customer", "<STRIPE CUSTOMER ID>");
-```
-
-When both a code and credit card parameters are provided, the library will try to split the payment between the two, in such a way that the gift code value contributes to the payment as much as possible. This usually means:
-
-- If the gift code value is sufficient, the entire transaction will be charged on the gift code.
+- If the Lightrail value is sufficient, the entire transaction will be charged on the gift card or account credit.
 
 
-- If the transaction amount is larger than the value of the gift code, the entire value of the gift code will be redeemed and the remainder will go on the credit card — unless the remainder is too small for a Stripe transaction in which case the split point is shifted just enough for the credit card's share of the transaction to meet the minimum requirements.
+- If the transaction amount is larger than the Lightrail value, the remainder will be charged to Stripe — unless the remainder is too small for a Stripe transaction in which case the split point is shifted just enough for the Stripe share of the transaction to meet the minimum requirements.
 
-The `simulate()` method returns a `PaymentSummary` object which demonstrates the intended plan for splitting the transaction between the gift code and the credit card. This provides a good way of showing the summary of the payment to the user to confirm. It can also be used for checking whether the gift code value will cover the entire transaction and determine whether you need to provide a Stripe payment parameter:
+The `simulate()` method returns a `PaymentSummary` object which demonstrates the intended plan for splitting the transaction between Lightrail and Stripe. You can use this for showing the summary of the payment to the user to confirm. You can also use this for checking whether the Lightrail value is enough to cover the entire transaction and determine whether you need to provide a Stripe payment parameter:
 
 ```java
 //set up hybridChargeParams
-PaymentSummary paymentSummary = StripeGiftHybridCharge.simulate(hybridChargeParams);
-int creditCardShare = paymentSummary.getCreditCardAmount();
-if (creditCardShare >0) {
+PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
+int stripeShare = paymentSummary.getStripeAmount();
+if (stripeShare >0) {
   //obtain a Stripe token
   hybridChargeParams.put("token", "<STRIPE TOKEN>");
 }
-StripeGiftHybridCharge charge = StripeGiftHybridCharge.create(hybridChargeParams);
+StripeLightrailHybridCharge charge = StripeLightrailHybridCharge.create(hybridChargeParams);
 ```
 
-### Order Checkout Using `CheckoutWithStripeAndGiftCode`
+### Order Checkout Using `CheckoutWithStripeAndLightrail`
 
-This class provides a wrapper around `StripeGiftHybridCharge` with a more straightforward interface for developers who are not used to Stripe's Java library. 
+This class provides a wrapper around `StripeLightrailHybridCharge` with a more straightforward interface for developers who are not familiar with Stripe's Java library. 
 
 ```java
 Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 Stripe.apiKey = properties.getProperty("stripe.testApiKey");
 
-CheckoutWithStripeAndGiftCode checkoutWithGiftCode = new CheckoutWithStripeAndGiftCode(375, "USD")
-                .useGiftCode("<GIFT CODE>")
-                .useStripeToken("<STRIPE TOKEN>");
-PaymentSummary paymentSummary = checkoutWithGiftCode.getPaymentSummary();
+CheckoutWithStripeAndLightrail checkout = new CheckoutWithStripeAndLightrail (375, "USD")
+      .useGiftCode("<GIFT CODE>") 
+      //or .useLightrailCustomer("<LIGHTRAIL CUSTOMER ACC ID>")
+      .useStripeToken("<STRIPE TOKEN>"); 
+      //or .useStripeCustomer("<STRIPE CUSTOMER IS>"") 
+PaymentSummary paymentSummary = checkout.getPaymentSummary();
 //show summary to the user and confirm
 //...
-paymentSummary = checkoutWithGiftCode.checkout();
+paymentSummary = checkout.checkout();
 ```
 
 ## Related Projects
@@ -87,7 +96,7 @@ You can add this library as a dependency in your `maven` `POM` file as:
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-stripe-client</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
@@ -119,7 +128,7 @@ The only dependecies of this library are `lightrail-client` and `stripe-java`.
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 </dependency>
 <dependency>
   <groupId>com.stripe</groupId>
@@ -142,6 +151,12 @@ The following dependecy is also necessary if you want to run the unit tests.
 
 ## Changelog ## 
 
+### 1.1.0
+
+- Support for using account credits in hybrid charges and checkout.
+- Renamed the main classes to reflect that they are more general now and support account credits as well.
+
 ### 1.0.1 ###
+
 - `StripeGiftHybridCharge` and `CheckoutWithGiftCode` class for easy order checkout alongside `Stripe`.
 
