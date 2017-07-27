@@ -1,8 +1,6 @@
 package com.lightrail.model.stripe;
 
 import com.lightrail.helpers.*;
-import com.lightrail.model.business.GiftCharge;
-import com.stripe.model.Charge;
 
 import java.util.*;
 import java.util.Currency;
@@ -17,10 +15,10 @@ public class PaymentSummary {
     Map<String, PaymentSummaryLine> summaryLineItems = new HashMap<>();
     String currency;
 
-    public PaymentSummary(String currency, int giftCodeAmount, int creditCardAmount) {
+    public PaymentSummary(String currency, int lightrailAmount, int creditCardAmount) {
         this.currency = currency;
-        addGiftCodeAmount(giftCodeAmount, "");
-        addCreditCardAmount(creditCardAmount, "");
+        addLightrailAmount(lightrailAmount, "");
+        addStripeAmount(creditCardAmount, "");
 
     }
 
@@ -28,28 +26,28 @@ public class PaymentSummary {
         this.currency = currency;
     }
 
-    public void addGiftCodeAmount(int giftCodeAmount, String comment) {
+    public void addLightrailAmount(int lightrailAmount, String comment) {
         PaymentSummaryLine paymentSummaryLine = new PaymentSummaryLine();
 
         paymentSummaryLine.title = comment;
-        paymentSummaryLine.amount = giftCodeAmount;
-        summaryLineItems.put(Constants.LightrailEcommerce.PaymentSummary.GIFT_CODE_SHARE, paymentSummaryLine);
+        paymentSummaryLine.amount = lightrailAmount;
+        summaryLineItems.put(LightrailEcommerceConstants.PaymentSummary.LIGHTRAIL_SHARE, paymentSummaryLine);
     }
 
-    public void addCreditCardAmount(int creditCardAmount, String comment) {
+    public void addStripeAmount(int creditCardAmount, String comment) {
         PaymentSummaryLine paymentSummaryLine = new PaymentSummaryLine();
 
         paymentSummaryLine.title = comment;
         paymentSummaryLine.amount = creditCardAmount;
-        summaryLineItems.put(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE, paymentSummaryLine);
+        summaryLineItems.put(LightrailEcommerceConstants.PaymentSummary.CREDIT_CARD_SHARE, paymentSummaryLine);
     }
 
-    public int getGiftCodeAmount() {
-        return summaryLineItems.get(Constants.LightrailEcommerce.PaymentSummary.GIFT_CODE_SHARE).amount;
+    public int getLightrailAmount() {
+        return summaryLineItems.get(LightrailEcommerceConstants.PaymentSummary.LIGHTRAIL_SHARE).amount;
     }
 
-    public int getCreditCardAmount() {
-        return summaryLineItems.get(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE).amount;
+    public int getStripeAmount() {
+        return summaryLineItems.get(LightrailEcommerceConstants.PaymentSummary.CREDIT_CARD_SHARE).amount;
     }
 
     public String toString() {
