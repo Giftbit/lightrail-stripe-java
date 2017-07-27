@@ -1,7 +1,6 @@
 # Lightrail Stripe Integration Library
 
-Lightrail is a modern platform for digital account credits, gift cards, promotions, and points.
-(To learn more, visit [Lightrail](https://www.lightrail.com/)). The Lightrail Stripe integration provides a client library for developers to easily use Lightrail alongside [Stripe](https://stripe.com/). This library is based on [Lightrail Java Client Library](https://github.com/Giftbit/lightrail-client-java).
+Lightrail is a modern platform for digital account credits, gift cards, promotions, and points (to learn more, visit [Lightrail](https://www.lightrail.com/)). The Lightrail Stripe integration provides a client library for developers to easily use Lightrail alongside [Stripe](https://stripe.com/). This library is based on [Lightrail Java Client Library](https://github.com/Giftbit/lightrail-client-java).
 
 If you are looking for specific use cases or other languages, check out [related projects](https://github.com/Giftbit/lightrail-client-java#related-projects). For a complete list of all Lightrail libraries and integrations, check out the [Lightrail Integration page](https://github.com/Giftbit/Lightrail-API-Docs/blob/usecases/Integrations.md).
 
@@ -40,17 +39,17 @@ Map<String, Object> hybridChargeParams = new HashMap<>();
 PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
 //show summary to the user and confirm
 //...
-StripeGiftHybridCharge charge = StripeLightrailHybridCharge.create(hybridChargeParams);
+StripeLightrailHybridCharge charge = StripeLightrailHybridCharge.create(hybridChargeParams);
 ```
 
-If you don't pass any Lightrail  parameter, the entire transaction will be charged to Stripe. Similarly, if you don't provide any Stripe parameter, the library will attempt to charge the entire transaction to Lightrail. If the value of the gift card or account credit is not enough to cover the entire transaction amount, you will receive a `BadParameterException` asking you to provide a Stripe parameter.
+If you don't pass any Lightrail parameters, the entire transaction will be charged to Stripe. Similarly, if you don't provide any Stripe parameters, the library will attempt to charge the entire transaction to Lightrail. If the value of the gift card or account credit is not enough to cover the entire transaction amount, you will receive a `BadParameterException` asking you to provide a Stripe parameter.
 
-When both a Lightrail and Stripe credit card parameters are provided, the library will try to split the payment, in such a way that Lightrail contributes to the payment as much as possible. This usually means:
+When both a Lightrail and a Stripe parameter are provided, the library will try to split the payment, in such a way that Lightrail contributes to the payment as much as possible. This usually means:
 
 - If the Lightrail value is sufficient, the entire transaction will be charged on the gift card or account credit.
 
 
-- If the transaction amount is larger than the Lightrail value, the remainder will be charged to Stripe — unless the remainder is too small for a Stripe transaction in which case the split point is shifted just enough for the Stripe share of the transaction to meet the minimum requirements.
+- If the transaction amount is larger than the Lightrail value, the remainder will be charged to Stripe —unless the remainder is too small for a Stripe transaction in which case the split point is shifted just enough for the Stripe share of the transaction to meet the minimum requirements.
 
 The `simulate()` method returns a `PaymentSummary` object which demonstrates the intended plan for splitting the transaction between Lightrail and Stripe. You can use this for showing the summary of the payment to the user to confirm. You can also use this for checking whether the Lightrail value is enough to cover the entire transaction and determine whether you need to provide a Stripe payment parameter:
 
