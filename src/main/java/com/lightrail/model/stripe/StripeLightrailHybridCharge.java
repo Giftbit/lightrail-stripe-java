@@ -64,17 +64,17 @@ public class StripeLightrailHybridCharge {
         return stripeParam;
     }
 
-    private static int adjustForMinimumStripeTransactionValue(int transactionAmount, int currentGiftCodeShare) throws InsufficientValueException {
-        int newGiftCodeShare = currentGiftCodeShare;
-        int stripeShare = transactionAmount - currentGiftCodeShare;
+    private static int adjustForMinimumStripeTransactionValue(int transactionAmount, int currentLightrailShare) throws InsufficientValueException {
+        int newLightrailShare = currentLightrailShare;
+        int stripeShare = transactionAmount - currentLightrailShare;
         if (stripeShare > 0 && stripeShare < StripeConstants.STRIPE_MINIMUM_TRANSACTION_VALUE) {
             int differential = StripeConstants.STRIPE_MINIMUM_TRANSACTION_VALUE - stripeShare;
-            newGiftCodeShare = currentGiftCodeShare - differential;
-            if (newGiftCodeShare < 0)
+            newLightrailShare = currentLightrailShare - differential;
+            if (newLightrailShare < 0)
                 throw new InsufficientValueException("The balance of this gift card or account credit is too small for this transaction.");
         }
 
-        return newGiftCodeShare;
+        return newLightrailShare;
     }
 
     private static int determineLightrailShare(Map<String, Object> chargeParams) throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
@@ -82,7 +82,7 @@ public class StripeLightrailHybridCharge {
         int lightrailShare = 0;
         LightrailCharge lightrailCharge = null;
         try {
-            lightrailCharge = retrieveGiftCharge(chargeParams);
+            lightrailCharge = retrieveLightrailCharge(chargeParams);
         } catch (BadParameterException e) {
         } catch (CouldNotFindObjectException e) {
         }
@@ -126,14 +126,14 @@ public class StripeLightrailHybridCharge {
 
         int transactionAmount = (Integer) chargeParams.get(LightrailConstants.Parameters.AMOUNT);
 
-        int giftCodeShare = determineLightrailShare(chargeParams);
-        int creditCardShare = transactionAmount - giftCodeShare;
+        int lightrailShare = determineLightrailShare(chargeParams);
+        int stripeShare = transactionAmount - lightrailShare;
         return new PaymentSummary((String) chargeParams.get(LightrailConstants.Parameters.CURRENCY),
-                giftCodeShare,
-                creditCardShare);
+                lightrailShare,
+                stripeShare);
     }
 
-    private static LightrailCharge retrieveGiftCharge(Map<String, Object> chargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
+    private static LightrailCharge retrieveLightrailCharge(Map<String, Object> chargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
         return LightrailCharge.retrieve(chargeParams);
     }
 
@@ -151,7 +151,7 @@ public class StripeLightrailHybridCharge {
             chargeParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
         }
 
-        LightrailCharge giftCharge = null;
+        LightrailCharge lightrailCharge = null;
         Charge stripeCharge = null;
 
         int transactionAmount = (Integer) chargeParams.get(LightrailConstants.Parameters.AMOUNT);
@@ -173,25 +173,25 @@ public class StripeLightrailHybridCharge {
             lightrailChargeParams.put(LightrailConstants.Parameters.CURRENCY, transactionCurrency);
             lightrailChargeParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
 
-            Map<String, Object> giftChargeMetadata = new HashMap<>();
-            giftChargeMetadata.put(LightrailEcommerceConstants.HYBRID_TRANSACTION_TOTAL_METADATA_KEY, transactionAmount);
-            lightrailChargeParams.put(LightrailConstants.Parameters.METADATA, giftChargeMetadata);
+            Map<String, Object> lightrailChargeMetadata = new HashMap<>();
+            lightrailChargeMetadata.put(LightrailEcommerceConstants.HYBRID_TRANSACTION_TOTAL_METADATA_KEY, transactionAmount);
+            lightrailChargeParams.put(LightrailConstants.Parameters.METADATA, lightrailChargeMetadata);
 
             if (creditCardShare == 0) { //everything on giftcode
-                giftCharge = LightrailCharge.create(lightrailChargeParams);
+                lightrailCharge = LightrailCharge.create(lightrailChargeParams);
             } else { //split between giftcode and credit card
                 lightrailChargeParams.put(LightrailConstants.Parameters.CAPTURE, false);
-                giftCharge = LightrailCharge.create(lightrailChargeParams);
+                lightrailCharge = LightrailCharge.create(lightrailChargeParams);
                 try {
                     RequestOptions stripeRequestOptions = RequestOptions.builder()
                             .setIdempotencyKey(idempotencyKey)
                             .build();
                     stripeCharge = Charge.create(getStripeParams(creditCardShare, chargeParams), stripeRequestOptions);
                 } catch (Exception e) {
-                    giftCharge.cancel();
+                    lightrailCharge.cancel();
                     throw new ThirdPartyPaymentException(e);
                 }
-                giftCharge.capture();
+                lightrailCharge.capture();
             }
         } else { //all on credit card
             try {
@@ -201,14 +201,14 @@ public class StripeLightrailHybridCharge {
             }
         }
         PaymentSummary paymentSummary = new PaymentSummary(transactionCurrency, lightrailShare, creditCardShare);
-        return new StripeLightrailHybridCharge(giftCharge, stripeCharge, paymentSummary);
+        return new StripeLightrailHybridCharge(lightrailCharge, stripeCharge, paymentSummary);
     }
 
-    public String getGiftTransactionId() {
-        String giftCodeTransactionId = null;
+    public String getLightrailTransactionId() {
+        String lightrailTransactionId = null;
         if (lightrailCharge != null)
-            giftCodeTransactionId = lightrailCharge.getTransactionId();
-        return giftCodeTransactionId;
+            lightrailTransactionId = lightrailCharge.getTransactionId();
+        return lightrailTransactionId;
     }
 
     public String getStripeTransactionId() {

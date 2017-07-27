@@ -1,12 +1,12 @@
 # Lightrail Stripe Integration Library
 
 Lightrail is a modern platform for digital account credits, gift cards, promotions, and points.
-(To learn more, visit [Lightrail](https://www.lightrail.com/)). The Lightrail Stripe integration provides a client library for developers to easily use Lightrail's features alongside [Stripe](https://stripe.com/). This library is based on [Lightrail Java Client Library](https://github.com/Giftbit/lightrail-client-java).
+(To learn more, visit [Lightrail](https://www.lightrail.com/)). The Lightrail Stripe integration provides a client library for developers to easily use Lightrail alongside [Stripe](https://stripe.com/). This library is based on [Lightrail Java Client Library](https://github.com/Giftbit/lightrail-client-java).
 
 If you are looking for specific use cases or other languages, check out [related projects](https://github.com/Giftbit/lightrail-client-java#related-projects). For a complete list of all Lightrail libraries and integrations, check out the [Lightrail Integration page](https://github.com/Giftbit/Lightrail-API-Docs/blob/usecases/Integrations.md).
 
 ## Features ##
-- Simple order checkout which supports Lightreail gift card redemption or account credits alongside a Stripe payment.
+- Simple order checkout which supports Lightrail gift card redemption or account credits alongside a Stripe payment.
 
 ## Usage ##
 
@@ -122,7 +122,7 @@ This library requires `Java 1.7` or later.
 
 ## Dependencies ##
 
-The only dependecies of this library are `lightrail-client` and `stripe-java`. 
+The only dependency of this library are `lightrail-client` and `stripe-java`. 
 
 ```xml
 <dependency>
@@ -138,7 +138,7 @@ The only dependecies of this library are `lightrail-client` and `stripe-java`.
 ```
 If your project already depends on a different version of the Stripe library, make sure the versions are compatible. We will ensure to periodically update the dependencies to the latest version. 
 
-The following dependecy is also necessary if you want to run the unit tests.
+The following dependency is also necessary if you want to run the unit tests.
 
 ```xml
 <dependency>

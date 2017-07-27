@@ -270,14 +270,14 @@ public class StripeLightrailHybridChargeTest {
 //
 //        String idempotencyKey = stripeGiftHybridCharge.getIdempotencyKey();
 //
-//        String firstGiftTransactionId = stripeGiftHybridCharge.getGiftTransactionId();
+//        String firstGiftTransactionId = stripeGiftHybridCharge.getLightrailTransactionId();
 //        String firstStripeTransactionId = stripeGiftHybridCharge.getStripeTransactionId();
 //
 //        hybridChargeParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
 //
 //        stripeGiftHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
 //
-//        String secondGiftTransactionId = stripeGiftHybridCharge.getGiftTransactionId();
+//        String secondGiftTransactionId = stripeGiftHybridCharge.getLightrailTransactionId();
 //        String secondStripeTransactionId = stripeGiftHybridCharge.getStripeTransactionId();
 //
 //        assertEquals(firstGiftTransactionId, secondGiftTransactionId);
