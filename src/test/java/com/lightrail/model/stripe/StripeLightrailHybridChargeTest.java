@@ -50,13 +50,13 @@ public class StripeLightrailHybridChargeTest {
         hybridChargeParams.put(StripeConstants.Parameters.TOKEN, properties.getProperty("stripe.demoToken"));
 
         PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
-        int giftCodeShare = paymentSummary.getLightrailAmount();
+        int giftCodeShare = paymentSummary.getLightrailPayment().getAmount();
         StripeLightrailHybridCharge stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
 
         paymentSummary = stripeLightrailHybridCharge.getPaymentSummary();
-        assertEquals(giftCodeShare, paymentSummary.getLightrailAmount());
+        assertEquals(giftCodeShare, paymentSummary.getLightrailPayment().getAmount());
 
-        int creditCardShare = paymentSummary.getStripeAmount();
+        int creditCardShare = paymentSummary.getStripePayment().getAmount();
 
         assertEquals(transactionAmount, giftCodeShare + creditCardShare);
 
@@ -85,14 +85,14 @@ public class StripeLightrailHybridChargeTest {
         hybridChargeParams.put(StripeConstants.Parameters.TOKEN, properties.getProperty("stripe.demoToken"));
 
         PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
-        int lightrailShare = paymentSummary.getLightrailAmount();
+        int lightrailShare = paymentSummary.getLightrailPayment().getAmount();
         assertEquals(customerCreditValue, lightrailShare);
 
         StripeLightrailHybridCharge stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
         paymentSummary = stripeLightrailHybridCharge.getPaymentSummary();
         assertEquals(customerCreditValue, lightrailShare);
 
-        int creditCardShare = paymentSummary.getStripeAmount();
+        int creditCardShare = paymentSummary.getStripePayment().getAmount();
 
         assertEquals(transactionAmount, lightrailShare + creditCardShare);
 
@@ -105,7 +105,7 @@ public class StripeLightrailHybridChargeTest {
         hybridChargeParams.put(StripeConstants.Parameters.CUSTOMER, properties.getProperty("stripe.demoCustomer"));
 
         paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
-        lightrailShare = paymentSummary.getLightrailAmount();
+        lightrailShare = paymentSummary.getLightrailPayment().getAmount();
         assertEquals(customerCreditValue, lightrailShare);
 
         stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
@@ -124,11 +124,11 @@ public class StripeLightrailHybridChargeTest {
         hybridChargeParams.put(StripeConstants.Parameters.AMOUNT, transactionAmount);
 
         PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
-        assertEquals(0, paymentSummary.getStripeAmount());
+        assertEquals(0, paymentSummary.getStripePayment().getAmount());
         StripeLightrailHybridCharge stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
         paymentSummary = stripeLightrailHybridCharge.getPaymentSummary();
-        int giftCodeShare = paymentSummary.getLightrailAmount();
-        assertEquals(0, paymentSummary.getStripeAmount());
+        int giftCodeShare = paymentSummary.getLightrailPayment().getAmount();
+        assertEquals(0, paymentSummary.getStripePayment().getAmount());
         returnFundsToCode(giftCodeShare);
     }
 
@@ -146,10 +146,10 @@ public class StripeLightrailHybridChargeTest {
         hybridChargeParams.put(StripeConstants.Parameters.TOKEN, properties.getProperty("stripe.demoToken"));
 
         PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
-        assertEquals(0, paymentSummary.getLightrailAmount());
+        assertEquals(0, paymentSummary.getLightrailPayment().getAmount());
         StripeLightrailHybridCharge stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
         paymentSummary = stripeLightrailHybridCharge.getPaymentSummary();
-        assertEquals(0, paymentSummary.getLightrailAmount());
+        assertEquals(0, paymentSummary.getLightrailPayment().getAmount());
     }
 
     @Test
@@ -163,7 +163,7 @@ public class StripeLightrailHybridChargeTest {
             Map<String, Object> hybridChargeParams = TestParams.readCodeParamsFromProperties();
             hybridChargeParams.put(StripeConstants.Parameters.AMOUNT, transactionAmount);
             PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
-            assertEquals( amountToGoOnCreditCard, paymentSummary.getStripeAmount());
+            assertEquals( amountToGoOnCreditCard, paymentSummary.getStripePayment().getAmount());
 
             StripeLightrailHybridCharge stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
         } catch (Exception e) {
@@ -185,15 +185,15 @@ public class StripeLightrailHybridChargeTest {
         hybridChargeParams.put(StripeConstants.Parameters.TOKEN, properties.getProperty("stripe.demoToken"));
 
         PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
-        int giftCodeShare = paymentSummary.getLightrailAmount();
-        int creditCardShare = paymentSummary.getStripeAmount();
+        int giftCodeShare = paymentSummary.getLightrailPayment().getAmount();
+        int creditCardShare = paymentSummary.getStripePayment().getAmount();
         assertEquals(StripeConstants.STRIPE_MINIMUM_TRANSACTION_VALUE, creditCardShare);
         StripeLightrailHybridCharge stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
 
         paymentSummary = stripeLightrailHybridCharge.getPaymentSummary();
-        assertEquals(StripeConstants.STRIPE_MINIMUM_TRANSACTION_VALUE, paymentSummary.getStripeAmount());
+        assertEquals(StripeConstants.STRIPE_MINIMUM_TRANSACTION_VALUE, paymentSummary.getStripePayment().getAmount());
 
-        returnFundsToCode(stripeLightrailHybridCharge.getPaymentSummary().getLightrailAmount());
+        returnFundsToCode(stripeLightrailHybridCharge.getPaymentSummary().getLightrailPayment().getAmount());
     }
 
     @Test
@@ -241,7 +241,7 @@ public class StripeLightrailHybridChargeTest {
         StripeLightrailHybridCharge stripeLightrailHybridCharge = StripeLightrailHybridCharge.create(hybridChargeParams);
 
         PaymentSummary paymentSummary = stripeLightrailHybridCharge.getPaymentSummary();
-        int giftCodeShare = paymentSummary.getLightrailAmount();
+        int giftCodeShare = paymentSummary.getLightrailPayment().getAmount();
 
         Integer total = ((Double) stripeLightrailHybridCharge.getLightrailCharge().getMetadata().get(LightrailEcommerceConstants.HYBRID_TRANSACTION_TOTAL_METADATA_KEY)).intValue();
         assertEquals(transactionAmount, total);

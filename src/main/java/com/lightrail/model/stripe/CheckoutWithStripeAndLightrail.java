@@ -57,7 +57,7 @@ public class CheckoutWithStripeAndLightrail {
 
     public boolean needsCreditCardPayment() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(getChargeParams());
-        return paymentSummary.getStripeAmount() > 0;
+        return paymentSummary.getStripePayment().getAmount() > 0;
     }
 
     public PaymentSummary getPaymentSummary() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {

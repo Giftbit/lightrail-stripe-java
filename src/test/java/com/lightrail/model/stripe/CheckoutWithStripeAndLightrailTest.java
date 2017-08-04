@@ -61,13 +61,13 @@ public class CheckoutWithStripeAndLightrailTest {
         Properties properties = TestParams.getProperties();
 
         CheckoutWithStripeAndLightrail checkoutWithGiftCode = createCheckoutObject(7645, true, true);
-        int giftCodeShare = checkoutWithGiftCode.checkout().getLightrailAmount();
+        int giftCodeShare = checkoutWithGiftCode.checkout().getLightrailPayment().getAmount();
         returnFundsToCode(giftCodeShare);
 
         checkoutWithGiftCode = createCheckoutObject(7645, true, true);
 
         PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
-        int newGiftCodeShare = paymentSummary.getLightrailAmount();
+        int newGiftCodeShare = paymentSummary.getLightrailPayment().getAmount();
         assertEquals(giftCodeShare, newGiftCodeShare);
         returnFundsToCode(giftCodeShare);
     }
@@ -82,9 +82,9 @@ public class CheckoutWithStripeAndLightrailTest {
         CheckoutWithStripeAndLightrail checkoutWithGiftCode = createCheckoutObject(orderTotal, true, false);
 
         PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
-        assertEquals(0, paymentSummary.getStripeAmount());
+        assertEquals(0, paymentSummary.getStripePayment().getAmount());
 
-        returnFundsToCode(paymentSummary.getLightrailAmount());
+        returnFundsToCode(paymentSummary.getLightrailPayment().getAmount());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class CheckoutWithStripeAndLightrailTest {
         Stripe.apiKey = properties.getProperty("stripe.testApiKey");
         checkoutWithGiftCode = createCheckoutObject(100, false, true);
         PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
-        assertEquals(0, paymentSummary.getLightrailAmount());
+        assertEquals(0, paymentSummary.getLightrailPayment().getAmount());
     }
 
 //    @Test
@@ -188,13 +188,13 @@ public class CheckoutWithStripeAndLightrailTest {
         checkout.useStripeToken(properties.getProperty("stripe.demoToken"));
 
         PaymentSummary paymentSummary = checkout.getPaymentSummary();
-        int lightrailShare = paymentSummary.getLightrailAmount();
+        int lightrailShare = paymentSummary.getLightrailPayment().getAmount();
         assertEquals(customerCreditValue, lightrailShare);
 
         paymentSummary = checkout.checkout();
         assertEquals(customerCreditValue, lightrailShare);
 
-        int creditCardShare = paymentSummary.getStripeAmount();
+        int creditCardShare = paymentSummary.getStripePayment().getAmount();
 
         assertEquals(orderTotal, lightrailShare + creditCardShare);
 
@@ -205,13 +205,13 @@ public class CheckoutWithStripeAndLightrailTest {
         checkout.useStripeCustomer(properties.getProperty("stripe.demoCustomer"));
 
         paymentSummary = checkout.getPaymentSummary();
-        lightrailShare = paymentSummary.getLightrailAmount();
+        lightrailShare = paymentSummary.getLightrailPayment().getAmount();
         assertEquals(customerCreditValue, lightrailShare);
 
         paymentSummary = checkout.checkout();
         assertEquals(customerCreditValue, lightrailShare);
 
-        creditCardShare = paymentSummary.getStripeAmount();
+        creditCardShare = paymentSummary.getStripePayment().getAmount();
 
         assertEquals(orderTotal, lightrailShare + creditCardShare);
     }

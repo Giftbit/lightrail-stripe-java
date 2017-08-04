@@ -1,5 +1,6 @@
 package com.lightrail.model.stripe;
 
+import com.google.gson.Gson;
 import com.lightrail.exceptions.*;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.LightrailEcommerceConstants;
@@ -36,7 +37,7 @@ public class StripeLightrailHybridCharge {
         return paymentSummary;
     }
 
-    public StripeLightrailHybridCharge(LightrailCharge lightrailCharge, Charge stripeCharge, PaymentSummary paymentSummary) {
+    StripeLightrailHybridCharge(LightrailCharge lightrailCharge, Charge stripeCharge, PaymentSummary paymentSummary) {
         this.lightrailCharge = lightrailCharge;
         this.stripeCharge = stripeCharge;
         this.paymentSummary = paymentSummary;
@@ -80,11 +81,13 @@ public class StripeLightrailHybridCharge {
     private static int determineLightrailShare(Map<String, Object> chargeParams) throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         int transactionAmount = (Integer) chargeParams.get(LightrailConstants.Parameters.AMOUNT);
         int lightrailShare = 0;
-        LightrailCharge lightrailCharge = null;
+        LightrailCharge lightrailCharge;
         try {
             lightrailCharge = retrieveLightrailCharge(chargeParams);
         } catch (BadParameterException e) {
+            lightrailCharge = null;
         } catch (CouldNotFindObjectException e) {
+            lightrailCharge = null;
         }
 
         if (lightrailCharge == null) { //it's not a replay
@@ -200,8 +203,21 @@ public class StripeLightrailHybridCharge {
                 throw new ThirdPartyPaymentException(e);
             }
         }
-        PaymentSummary paymentSummary = new PaymentSummary(transactionCurrency, lightrailShare, creditCardShare);
+
+        //PaymentSummary paymentSummary = new PaymentSummary(transactionCurrency, lightrailShare, creditCardShare);
+        PaymentSummary paymentSummary = new PaymentSummary(transactionCurrency)
+                .addLightrailAmount(lightrailShare, getMetadata(lightrailShare, lightrailCharge))
+                .addStripeAmount(creditCardShare, getMetadata(creditCardShare, stripeCharge));
         return new StripeLightrailHybridCharge(lightrailCharge, stripeCharge, paymentSummary);
+    }
+
+    static Map<String, Object> getMetadata (int amount, Object charge) {
+        if (amount > 0) {
+            String jsonString = new Gson().toJson(charge);
+            return (Map<String, Object>) new Gson().fromJson(jsonString, Map.class);
+        } else {
+            return null;
+        }
     }
 
     public String getLightrailTransactionId() {
