@@ -59,7 +59,7 @@ PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridCharg
 int stripeShare = paymentSummary.getStripeAmount();
 if (stripeShare >0) {
   //obtain a Stripe token
-  hybridChargeParams.put("token", "<STRIPE TOKEN>");
+  hybridChargeParams.put("source", "<STRIPE TOKEN>");
 }
 StripeLightrailHybridCharge charge = StripeLightrailHybridCharge.create(hybridChargeParams);
 ```
