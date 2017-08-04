@@ -21,7 +21,7 @@ If you are looking for specific use cases or other languages, check out [related
 
 The Stripe parameter could be:
 
-- `token`, indicating a Stripe token, or 
+- `source`, indicating a Stripe token, or 
 - `customer`, indicating a Stripe customer ID. 
 
 Here is a simple example:
@@ -34,7 +34,7 @@ Map<String, Object> hybridChargeParams = new HashMap<>();
   hybridChargeParams.put("code", "<GIFT CODE>");
   hybridChargeParams.put("currency","USD"));
   hybridChargeParams.put("amount", 375);
-  hybridChargeParams.put("token", "<STRIPE TOKEN>");
+  hybridChargeParams.put("source", "<STRIPE TOKEN>");
 
 PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(hybridChargeParams);
 //show summary to the user and confirm
