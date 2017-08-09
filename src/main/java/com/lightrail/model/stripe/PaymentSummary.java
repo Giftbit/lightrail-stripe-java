@@ -69,7 +69,6 @@ public class PaymentSummary {
             orderSummaryOutputBuffer.append("<td>").append(summaryItemKey).append("</td>");
 
             orderSummaryOutputBuffer.append("<td>")
-//            orderSummaryOutputBuffer.append(Currency.getInstance(currency).getSymbol())
                     .append(String.valueOf(summaryLineItems.get(summaryItemKey).amount));
             orderSummaryOutputBuffer.append("</td>");
 

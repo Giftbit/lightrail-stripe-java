@@ -5,6 +5,7 @@ import com.lightrail.exceptions.*;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.LightrailEcommerceConstants;
 import com.lightrail.helpers.StripeConstants;
+import com.lightrail.model.business.LightrailActionTransaction;
 import com.lightrail.model.business.LightrailCharge;
 import com.lightrail.model.business.LightrailTransaction;
 import com.lightrail.model.business.LightrailValue;
@@ -155,6 +156,7 @@ public class StripeLightrailHybridCharge {
         }
 
         LightrailCharge lightrailCharge = null;
+        LightrailActionTransaction lightrailCaptureTransaction = null;
         Charge stripeCharge = null;
 
         int transactionAmount = (Integer) chargeParams.get(LightrailConstants.Parameters.AMOUNT);
@@ -194,7 +196,7 @@ public class StripeLightrailHybridCharge {
                     lightrailCharge.cancel();
                     throw new ThirdPartyPaymentException(e);
                 }
-                lightrailCharge.capture();
+                lightrailCaptureTransaction = lightrailCharge.capture();
             }
         } else { //all on credit card
             try {
@@ -206,7 +208,7 @@ public class StripeLightrailHybridCharge {
 
         //PaymentSummary paymentSummary = new PaymentSummary(transactionCurrency, lightrailShare, creditCardShare);
         PaymentSummary paymentSummary = new PaymentSummary(transactionCurrency)
-                .addLightrailAmount(lightrailShare, getMetadata(lightrailShare, lightrailCharge))
+                .addLightrailAmount(lightrailShare, getMetadata(lightrailShare, lightrailCaptureTransaction))
                 .addStripeAmount(creditCardShare, getMetadata(creditCardShare, stripeCharge));
         return new StripeLightrailHybridCharge(lightrailCharge, stripeCharge, paymentSummary);
     }
