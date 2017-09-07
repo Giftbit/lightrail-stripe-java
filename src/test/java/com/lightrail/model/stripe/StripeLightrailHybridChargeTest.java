@@ -242,7 +242,7 @@ public class StripeLightrailHybridChargeTest {
         PaymentSummary paymentSummary = stripeLightrailHybridCharge.getPaymentSummary();
         int giftCodeShare = paymentSummary.getLightrailPayment().getAmount();
 
-        Integer total = ((Double) stripeLightrailHybridCharge.getLightrailCharge().getMetadata().get(LightrailEcommerceConstants.HYBRID_TRANSACTION_TOTAL_METADATA_KEY)).intValue();
+        Integer total = ((Double) stripeLightrailHybridCharge.getLightrailCharge().getMetadata().get(LightrailEcommerceConstants.HybridTransactionMetadata.SPLIT_TENDER_TOTAL)).intValue();
         assertEquals(transactionAmount, total);
 
         returnFundsToCode(giftCodeShare);
