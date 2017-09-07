@@ -14,7 +14,7 @@ public class CheckoutWithStripeAndLightrail {
     private String orderCurrency;
     private String giftCode = null;
     private String giftCardId = null;
-    private String lightrailCustomer = null;
+    private String lightrailContact = null;
     private String stripeToken = null;
     private String stripeCustomer = null;
 
@@ -40,7 +40,7 @@ public class CheckoutWithStripeAndLightrail {
     }
 
     public CheckoutWithStripeAndLightrail useLightrailCustomer(String lightrailCustomerId) {
-        this.lightrailCustomer = lightrailCustomerId;
+        this.lightrailContact = lightrailCustomerId;
         return this;
     }
 
@@ -70,7 +70,7 @@ public class CheckoutWithStripeAndLightrail {
 
     private Map<String, Object> getChargeParams() {
         Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put(LightrailConstants.Parameters.AMOUNT, orderTotal);
+        chargeParams.put(StripeConstants.Parameters.AMOUNT, orderTotal);
         chargeParams.put(LightrailConstants.Parameters.CURRENCY, orderCurrency);
         if (giftCode != null) {
             chargeParams.put(LightrailConstants.Parameters.CODE, giftCode);
@@ -78,8 +78,8 @@ public class CheckoutWithStripeAndLightrail {
         if (giftCardId != null) {
             chargeParams.put(LightrailConstants.Parameters.CARD_ID, giftCardId);
         }
-        if (lightrailCustomer != null) {
-            chargeParams.put(LightrailConstants.Parameters.CUSTOMER, lightrailCustomer);
+        if (lightrailContact != null) {
+            chargeParams.put(LightrailConstants.Parameters.CONTACT, lightrailContact);
         }
         if (stripeToken != null) {
             chargeParams.put(StripeConstants.Parameters.TOKEN, stripeToken);
