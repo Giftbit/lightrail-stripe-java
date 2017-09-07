@@ -2,7 +2,11 @@ package com.lightrail.helpers;
 
 
 public final class LightrailEcommerceConstants {
-    public static final String HYBRID_TRANSACTION_TOTAL_METADATA_KEY = "_hybrid_transaction_total";
+    public final class HybridTransactionMetadata {
+        public static final String SPLIT_TENDER_PARTNER = "_split-tender-partner";
+        public static final String SPLIT_TENDER_TOTAL = "_split-tender-total";
+        public static final String SPLIT_TENDER_PARTNER_TRANSACTION_ID = "_split-tender-partner-txn-id";
+    }
 
     public final class PaymentSummary {
         public static final String LIGHTRAIL_SHARE = "Gift code";

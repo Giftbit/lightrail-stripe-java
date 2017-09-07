@@ -8,7 +8,6 @@ import com.lightrail.helpers.StripeConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.business.CustomerAccount;
-import com.lightrail.model.business.LightrailFund;
 import com.lightrail.model.business.LightrailValue;
 import com.stripe.Stripe;
 import org.junit.Test;
@@ -79,7 +78,7 @@ public class StripeLightrailHybridChargeTest {
         customerAccount.addCurrency(currency, customerCreditValue);
 
         Map<String, Object> hybridChargeParams = new HashMap<>();
-        hybridChargeParams.put(LightrailConstants.Parameters.CUSTOMER, customerAccount.getId());
+        hybridChargeParams.put(LightrailConstants.Parameters.CONTACT, customerAccount.getId());
         hybridChargeParams.put(LightrailConstants.Parameters.CURRENCY, currency);
         hybridChargeParams.put(StripeConstants.Parameters.AMOUNT, transactionAmount);
         hybridChargeParams.put(StripeConstants.Parameters.TOKEN, properties.getProperty("stripe.demoToken"));
@@ -96,10 +95,10 @@ public class StripeLightrailHybridChargeTest {
 
         assertEquals(transactionAmount, lightrailShare + creditCardShare);
 
-        customerAccount.fund(lightrailShare);
+        customerAccount.transact(lightrailShare);
 
         hybridChargeParams = new HashMap<>();
-        hybridChargeParams.put(LightrailConstants.Parameters.CUSTOMER, customerAccount.getId());
+        hybridChargeParams.put(LightrailConstants.Parameters.CONTACT, customerAccount.getId());
         hybridChargeParams.put(LightrailConstants.Parameters.CURRENCY, currency);
         hybridChargeParams.put(StripeConstants.Parameters.AMOUNT, transactionAmount);
         hybridChargeParams.put(StripeConstants.Parameters.CUSTOMER, properties.getProperty("stripe.demoCustomer"));

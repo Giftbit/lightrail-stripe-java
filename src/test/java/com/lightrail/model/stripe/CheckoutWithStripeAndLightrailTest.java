@@ -5,7 +5,6 @@ import com.lightrail.helpers.StripeConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.business.CustomerAccount;
-import com.lightrail.model.business.LightrailFund;
 import com.lightrail.model.business.LightrailValue;
 import com.stripe.Stripe;
 import org.junit.Test;
@@ -167,7 +166,7 @@ public class CheckoutWithStripeAndLightrailTest {
 //    }
 
     @Test
-    public void checkoutWithCustomerIdTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException {
+    public void checkoutWithContactIdTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -198,7 +197,7 @@ public class CheckoutWithStripeAndLightrailTest {
 
         assertEquals(orderTotal, lightrailShare + creditCardShare);
 
-        customerAccount.fund(lightrailShare);
+        customerAccount.transact(lightrailShare);
 
         checkout = new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
         checkout.useLightrailCustomer(customerAccount.getId());

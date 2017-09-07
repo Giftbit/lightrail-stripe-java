@@ -1,12 +1,9 @@
 package com.lightrail.model.stripe;
 
 import com.lightrail.exceptions.*;
-import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.helpers.StripeConstants;
+
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.business.CustomerAccount;
-import com.lightrail.model.business.LightrailCharge;
 import com.lightrail.model.business.LightrailValue;
 
 
@@ -22,7 +19,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class IntegrationTest {
+public class IntegrationSample {
 
 
 
@@ -69,7 +66,7 @@ public class IntegrationTest {
                 //capture gift code charge once the credit card transaction went through
                 giftCharge.capture();
             } catch (IOException e) {
-                giftCharge.cancel();
+                giftCharge.doVoid();
                 throw new IOException(e);
             }
         }

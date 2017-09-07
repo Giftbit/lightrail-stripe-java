@@ -5,8 +5,8 @@ import com.lightrail.exceptions.*;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.LightrailEcommerceConstants;
 import com.lightrail.helpers.StripeConstants;
-import com.lightrail.model.business.LightrailActionTransaction;
-import com.lightrail.model.business.LightrailCharge;
+import com.lightrail.model.api.objects.Transaction;
+import com.lightrail.model.business.ContactHandler;
 import com.lightrail.model.business.LightrailTransaction;
 import com.lightrail.model.business.LightrailValue;
 import com.stripe.model.Charge;
@@ -80,9 +80,9 @@ public class StripeLightrailHybridCharge {
     }
 
     private static int determineLightrailShare(Map<String, Object> chargeParams) throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        int transactionAmount = (Integer) chargeParams.get(LightrailConstants.Parameters.AMOUNT);
+        int transactionAmount = (Integer) chargeParams.get(StripeConstants.Parameters.AMOUNT);
         int lightrailShare = 0;
-        LightrailCharge lightrailCharge;
+        Transaction lightrailCharge;
         try {
             lightrailCharge = retrieveLightrailCharge(chargeParams);
         } catch (BadParameterException e) {
@@ -112,8 +112,8 @@ public class StripeLightrailHybridCharge {
             lightrailShare = adjustForMinimumStripeTransactionValue(transactionAmount, lightrailShare);
 
         } else { //it's a replay
-            lightrailShare = lightrailCharge.getAmount();
-            Integer originaltransactionAmount = ((Double) lightrailCharge.getMetadata().get(LightrailEcommerceConstants.HYBRID_TRANSACTION_TOTAL_METADATA_KEY)).intValue();
+            lightrailShare = 0 - lightrailCharge.getValue();
+            Integer originaltransactionAmount = ((Double) lightrailCharge.getMetadata().get(LightrailEcommerceConstants.HybridTransactionMetadata.SPLIT_TENDER_TOTAL)).intValue();
             if (transactionAmount != originaltransactionAmount)
                 throw new BadParameterException("Idempotency Error. The parameters do not match the original transaction.");
         }
@@ -122,13 +122,13 @@ public class StripeLightrailHybridCharge {
 
     public static PaymentSummary simulate(Map<String, Object> chargeParams) throws AuthorizationException, CurrencyMismatchException, InsufficientValueException, IOException, CouldNotFindObjectException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.AMOUNT,
+                StripeConstants.Parameters.AMOUNT,
                 LightrailConstants.Parameters.CURRENCY
         ), chargeParams);
 
-        chargeParams = LightrailTransaction.handleCustomer(chargeParams);
+        chargeParams = ContactHandler.handleContact(chargeParams);
 
-        int transactionAmount = (Integer) chargeParams.get(LightrailConstants.Parameters.AMOUNT);
+        int transactionAmount = (Integer) chargeParams.get(StripeConstants.Parameters.AMOUNT);
 
         int lightrailShare = determineLightrailShare(chargeParams);
         int stripeShare = transactionAmount - lightrailShare;
@@ -137,17 +137,18 @@ public class StripeLightrailHybridCharge {
                 stripeShare);
     }
 
-    private static LightrailCharge retrieveLightrailCharge(Map<String, Object> chargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
-        return LightrailCharge.retrieve(chargeParams);
+    //todo: this needs to be improved to return a LightrailCharge
+    private static Transaction retrieveLightrailCharge(Map<String, Object> chargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
+        return LightrailTransaction.retrieve(chargeParams);
     }
 
     public static StripeLightrailHybridCharge create(Map<String, Object> chargeParams) throws InsufficientValueException, AuthorizationException, CurrencyMismatchException, IOException, ThirdPartyPaymentException, CouldNotFindObjectException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.AMOUNT,
+                StripeConstants.Parameters.AMOUNT,
                 LightrailConstants.Parameters.CURRENCY
         ), chargeParams);
 
-        chargeParams = LightrailTransaction.handleCustomer(chargeParams);
+        chargeParams = ContactHandler.handleContact(chargeParams);
 
         String idempotencyKey = (String) chargeParams.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
         if (idempotencyKey == null) {
@@ -156,10 +157,10 @@ public class StripeLightrailHybridCharge {
         }
 
         LightrailCharge lightrailCharge = null;
-        LightrailActionTransaction lightrailCaptureTransaction = null;
+        LightrailTransaction lightrailCaptureTransaction = null;
         Charge stripeCharge = null;
 
-        int transactionAmount = (Integer) chargeParams.get(LightrailConstants.Parameters.AMOUNT);
+        int transactionAmount = (Integer) chargeParams.get(StripeConstants.Parameters.AMOUNT);
         String transactionCurrency = (String) chargeParams.get(LightrailConstants.Parameters.CURRENCY);
 
         int lightrailShare = determineLightrailShare(chargeParams);
@@ -174,18 +175,19 @@ public class StripeLightrailHybridCharge {
             } else if (cardId != null) {
                 lightrailChargeParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
             }
-            lightrailChargeParams.put(LightrailConstants.Parameters.AMOUNT, lightrailShare);
+            lightrailChargeParams.put(StripeConstants.Parameters.AMOUNT, lightrailShare);
             lightrailChargeParams.put(LightrailConstants.Parameters.CURRENCY, transactionCurrency);
             lightrailChargeParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
 
             Map<String, Object> lightrailChargeMetadata = new HashMap<>();
-            lightrailChargeMetadata.put(LightrailEcommerceConstants.HYBRID_TRANSACTION_TOTAL_METADATA_KEY, transactionAmount);
+            lightrailChargeMetadata.put(LightrailEcommerceConstants.HybridTransactionMetadata.SPLIT_TENDER_TOTAL, transactionAmount);
+            lightrailChargeMetadata.put(LightrailEcommerceConstants.HybridTransactionMetadata.SPLIT_TENDER_PARTNER, "STRIPE");
             lightrailChargeParams.put(LightrailConstants.Parameters.METADATA, lightrailChargeMetadata);
 
             if (creditCardShare == 0) { //everything on giftcode
                 lightrailCharge = LightrailCharge.create(lightrailChargeParams);
             } else { //split between giftcode and credit card
-                lightrailChargeParams.put(LightrailConstants.Parameters.CAPTURE, false);
+                lightrailChargeParams.put(StripeConstants.Parameters.CAPTURE, false);
                 lightrailCharge = LightrailCharge.create(lightrailChargeParams);
                 try {
                     RequestOptions stripeRequestOptions = RequestOptions.builder()
@@ -193,7 +195,7 @@ public class StripeLightrailHybridCharge {
                             .build();
                     stripeCharge = Charge.create(getStripeParams(creditCardShare, chargeParams), stripeRequestOptions);
                 } catch (Exception e) {
-                    lightrailCharge.cancel();
+                    lightrailCharge.doVoid();
                     throw new ThirdPartyPaymentException(e);
                 }
                 lightrailCaptureTransaction = lightrailCharge.capture();
@@ -225,7 +227,7 @@ public class StripeLightrailHybridCharge {
     public String getLightrailTransactionId() {
         String lightrailTransactionId = null;
         if (lightrailCharge != null)
-            lightrailTransactionId = lightrailCharge.getTransactionId();
+            lightrailTransactionId = lightrailCharge.getId();
         return lightrailTransactionId;
     }
 
