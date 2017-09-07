@@ -48,6 +48,7 @@ public class StripeLightrailHybridCharge {
         return lightrailCharge.getIdempotencyKey();
     }
 
+    //todo: add metadata
     private static Map<String, Object> getStripeParams(int amount, Map<String, Object> chargeParams) {
         Object stripeToken = chargeParams.get(StripeConstants.Parameters.TOKEN);
         Object stripeCustomerId = chargeParams.get(StripeConstants.Parameters.CUSTOMER);
