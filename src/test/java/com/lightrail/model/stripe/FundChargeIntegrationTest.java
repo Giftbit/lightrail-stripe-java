@@ -7,13 +7,13 @@ import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.StripeConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.business.LightrailValue;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.lightrail.helpers.TestParams.getGiftCodeValue;
 import static org.junit.Assert.assertEquals;
 
 public class FundChargeIntegrationTest {
@@ -23,7 +23,7 @@ public class FundChargeIntegrationTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        int giftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;
 
@@ -32,12 +32,12 @@ public class FundChargeIntegrationTest {
         giftChargeParams.put(StripeConstants.Parameters.CAPTURE, false);
 
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
-        int newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        int newGiftCodeValue = getGiftCodeValue();
 
         assertEquals(giftCodeValue - chargeAmount, newGiftCodeValue);
 
         giftCharge.doVoid();
-        newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        newGiftCodeValue = getGiftCodeValue();
         assertEquals(giftCodeValue, newGiftCodeValue);
     }
 
@@ -47,7 +47,7 @@ public class FundChargeIntegrationTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        int giftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;
 
@@ -55,12 +55,12 @@ public class FundChargeIntegrationTest {
         giftChargeParams.put(StripeConstants.Parameters.AMOUNT, chargeAmount);
 
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
-        int newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        int newGiftCodeValue = getGiftCodeValue();
 
         assertEquals(giftCodeValue - chargeAmount, newGiftCodeValue);
 
         giftCharge.refund();
-        newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        newGiftCodeValue = getGiftCodeValue();
         assertEquals(giftCodeValue, newGiftCodeValue);
     }
 
@@ -70,15 +70,14 @@ public class FundChargeIntegrationTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        int giftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
-
+        int giftCodeValue = getGiftCodeValue();
         int valueAdded = 101;
 
         Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
         giftFundParams.put(StripeConstants.Parameters.AMOUNT, valueAdded);
         LightrailFund giftFund = LightrailFund.create(giftFundParams);
 
-        int newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        int newGiftCodeValue = getGiftCodeValue();
 
         assertEquals(giftCodeValue + valueAdded, newGiftCodeValue);
     }
@@ -89,7 +88,7 @@ public class FundChargeIntegrationTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        int giftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;
 
@@ -98,17 +97,17 @@ public class FundChargeIntegrationTest {
         giftChargeParams.put(StripeConstants.Parameters.CAPTURE, false);
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
 
-        int newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        int newGiftCodeValue = getGiftCodeValue();
         assertEquals(giftCodeValue - chargeAmount, newGiftCodeValue);
         giftCharge.capture();
-        newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        newGiftCodeValue = getGiftCodeValue();
         assertEquals(giftCodeValue - chargeAmount, newGiftCodeValue);
 
         Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
         giftFundParams.put(StripeConstants.Parameters.AMOUNT, chargeAmount);
 
         LightrailFund giftFund = LightrailFund.create(giftFundParams);
-        newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        newGiftCodeValue = getGiftCodeValue();
         assertEquals(giftCodeValue, newGiftCodeValue);
 
     }
@@ -119,8 +118,7 @@ public class FundChargeIntegrationTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
-        int giftCodeValue = giftValue.getCurrentValue();
+        int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;
 
@@ -128,8 +126,7 @@ public class FundChargeIntegrationTest {
         giftChargeParams.put(StripeConstants.Parameters.AMOUNT, chargeAmount);
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
 
-        LightrailValue newGiftValue = LightrailValue.retrieve(giftValueParams);
-        int newGiftCodeValue = newGiftValue.getCurrentValue();
+        int newGiftCodeValue = getGiftCodeValue();
 
         assertEquals(giftCodeValue - chargeAmount, newGiftCodeValue);
 
@@ -138,8 +135,7 @@ public class FundChargeIntegrationTest {
 
         LightrailFund giftFund = LightrailFund.create(giftFundParams);
 
-        newGiftValue = LightrailValue.retrieve(giftValueParams);
-        newGiftCodeValue = newGiftValue.getCurrentValue();
+        newGiftCodeValue = getGiftCodeValue();
         assertEquals(giftCodeValue, newGiftCodeValue);
     }
 

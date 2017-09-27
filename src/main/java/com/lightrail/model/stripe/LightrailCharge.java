@@ -1,11 +1,9 @@
 package com.lightrail.model.stripe;
 
-import com.lightrail.exceptions.AuthorizationException;
-import com.lightrail.exceptions.BadParameterException;
-import com.lightrail.exceptions.CouldNotFindObjectException;
-import com.lightrail.exceptions.InsufficientValueException;
+import com.lightrail.exceptions.*;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.StripeConstants;
+import com.lightrail.model.api.objects.RequestParameters;
 import com.lightrail.model.business.LightrailTransaction;
 
 import java.io.IOException;
@@ -13,7 +11,7 @@ import java.util.*;
 
 public class LightrailCharge extends LightrailBaseTransaction {
 
-    private LightrailCharge(LightrailTransaction transactionObject) {
+    LightrailCharge(LightrailTransaction transactionObject) {
         this.transactionObject = transactionObject;
     }
 
@@ -21,12 +19,13 @@ public class LightrailCharge extends LightrailBaseTransaction {
         return 0 - transactionObject.getValue();
     }
 
-    static Map<String, Object> translateToLightrail(Map<String, Object> chargeParams) {
+    static RequestParameters translateToLightrail(Map<String, Object> chargeParams) {
         chargeParams = LightrailBaseTransaction.translateToLightrail(chargeParams);
         if (!chargeParams.containsKey(StripeConstants.Parameters.CAPTURE))
             chargeParams.put(StripeConstants.Parameters.CAPTURE, true);
 
-        Map<String, Object> translatedParams = new HashMap<>(chargeParams);
+        RequestParameters translatedParams = new RequestParameters();
+        translatedParams.putAll(chargeParams);
 
         //capture --> pending
         Boolean capture = (Boolean) translatedParams.remove(StripeConstants.Parameters.CAPTURE);
@@ -126,6 +125,6 @@ public class LightrailCharge extends LightrailBaseTransaction {
                 LightrailConstants.Parameters.CURRENCY
         ), giftChargeParams);
 
-        return new LightrailCharge(LightrailTransaction.create(translateToLightrail(giftChargeParams)));
+        return new LightrailCharge(LightrailTransaction.Create.create(translateToLightrail(giftChargeParams)));
     }
 }

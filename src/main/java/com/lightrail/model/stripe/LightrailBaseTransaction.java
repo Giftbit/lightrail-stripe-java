@@ -1,10 +1,9 @@
 package com.lightrail.model.stripe;
 
+import com.lightrail.model.business.LightrailTransaction;
+
 import java.util.HashMap;
 import java.util.Map;
-
-
-import com.lightrail.model.business.LightrailTransaction;
 
 
 public abstract class LightrailBaseTransaction {

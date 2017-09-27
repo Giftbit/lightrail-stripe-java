@@ -1,9 +1,9 @@
 package com.lightrail.model.stripe;
 
+
 import com.lightrail.exceptions.*;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.StripeConstants;
-
 
 import java.io.IOException;
 import java.util.HashMap;

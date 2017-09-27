@@ -4,7 +4,6 @@ import com.lightrail.exceptions.*;
 
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.business.LightrailValue;
 
 
 import com.stripe.Stripe;
@@ -17,13 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.lightrail.helpers.TestParams.getGiftCodeValue;
 import static org.junit.Assert.assertEquals;
 
 public class IntegrationSample {
 
 
 
-
+    //todo: rewrite
     public void CheckoutWalkThroughSample () throws IOException, CurrencyMismatchException, BadParameterException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, CardException, APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
         Properties properties = TestParams.getProperties();
 
@@ -40,7 +40,7 @@ public class IntegrationSample {
         String giftCode = properties.getProperty("happyPath.code");
 
         //check how much the gift code can contribute to the checkout
-        int giftCodeValue = LightrailValue.retrieveByCode(giftCode).getCurrentValue();
+        int giftCodeValue = getGiftCodeValue();
 
         int giftCodeShare = Math.min (orderTotal , giftCodeValue);
         int creditCardShare = orderTotal - giftCodeShare;
