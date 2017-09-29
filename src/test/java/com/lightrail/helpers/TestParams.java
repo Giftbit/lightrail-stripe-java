@@ -3,8 +3,10 @@ package com.lightrail.helpers;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.CurrencyMismatchException;
+import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.business.GiftCard;
+import com.lightrail.model.stripe.LightrailCharge;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,11 +43,12 @@ public class TestParams {
         return giftChargeParams;
     }
 
-    public static int getGiftCodeValue() throws IOException, AuthorizationException, CouldNotFindObjectException, CurrencyMismatchException {
+    public static int getGiftCodeValue() throws IOException, AuthorizationException, CouldNotFindObjectException, CurrencyMismatchException, InsufficientValueException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
         String cardId = GiftCard.retrieveCardDetailsByCode(properties.getProperty("happyPath.code")).getCardId();
-        return GiftCard.retrieve(cardId).retrieveMaximumValue();
+        GiftCard giftCard = GiftCard.retrieve(cardId);
+        return LightrailCharge.simulateByCardId(cardId, giftCard.retrieveMaximumValue(), giftCard.getCurrency()).getAmount();
     }
 
 }

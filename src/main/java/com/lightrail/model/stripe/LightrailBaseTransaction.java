@@ -20,6 +20,9 @@ public abstract class LightrailBaseTransaction {
     public String getId() {
         return transactionObject.getTransactionId();
     }
+    public String getFullId() {
+        return transactionObject.getCardId() +"/"+transactionObject.getTransactionId();
+    }
 
     public Map<String, Object> getMetadata() {
         return transactionObject.getMetadata();

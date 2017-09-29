@@ -22,7 +22,6 @@ public class FundChargeIntegrationTest {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;
@@ -46,7 +45,6 @@ public class FundChargeIntegrationTest {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;
@@ -69,7 +67,6 @@ public class FundChargeIntegrationTest {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         int giftCodeValue = getGiftCodeValue();
         int valueAdded = 101;
 
@@ -87,7 +84,6 @@ public class FundChargeIntegrationTest {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;
@@ -117,7 +113,6 @@ public class FundChargeIntegrationTest {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         int giftCodeValue = getGiftCodeValue();
 
         int chargeAmount = 101;

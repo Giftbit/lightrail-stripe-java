@@ -18,7 +18,7 @@ public class CheckoutWithStripeAndLightrail {
     private String stripeToken = null;
     private String stripeCustomer = null;
 
-    StripeLightrailHybridCharge stripeLightrailHybridChargeObject = null;
+    StripeLightrailSplitTenderCharge stripeLightrailSplitTenderChargeObject = null;
 
     public CheckoutWithStripeAndLightrail(int orderTotal, String orderCurrency) {
         setOrderTotal(orderTotal, orderCurrency);
@@ -55,17 +55,25 @@ public class CheckoutWithStripeAndLightrail {
         return this;
     }
 
-    public boolean needsCreditCardPayment() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        PaymentSummary paymentSummary = StripeLightrailHybridCharge.simulate(getChargeParams());
-        return paymentSummary.getStripePayment().getAmount() > 0;
+    public boolean needsCreditCardPayment() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
+        try {
+            StripeLightrailSplitTenderCharge.simulate(getChargeParams()).getStripeCharge();
+        } catch (BadParameterException e) {
+            return true;
+        }
+        return false;
     }
 
-    public PaymentSummary getPaymentSummary() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
-        if (stripeLightrailHybridChargeObject != null) {
-            return stripeLightrailHybridChargeObject.getPaymentSummary();
-        } else {
-            return StripeLightrailHybridCharge.simulate(getChargeParams());
-        }
+    public StripeLightrailSplitTenderCharge simulate() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, ThirdPartyException {
+        return StripeLightrailSplitTenderCharge.simulate(getChargeParams());
+    }
+
+    public StripeLightrailSplitTenderCharge checkout() throws IOException, AuthorizationException, ThirdPartyException, CurrencyMismatchException, CouldNotFindObjectException, InsufficientValueException {
+        StripeLightrailSplitTenderCharge simulatedTx = simulate();
+        if (simulatedTx instanceof SimulatedStripeLightrailSplitTenderCharge)
+            return ((SimulatedStripeLightrailSplitTenderCharge) simulatedTx).commit();
+        else
+            return simulatedTx;
     }
 
     private Map<String, Object> getChargeParams() {
@@ -89,11 +97,6 @@ public class CheckoutWithStripeAndLightrail {
         }
 
         return chargeParams;
-    }
-
-    public PaymentSummary checkout() throws ThirdPartyPaymentException, InsufficientValueException, CurrencyMismatchException, AuthorizationException, IOException, CouldNotFindObjectException {
-        stripeLightrailHybridChargeObject = StripeLightrailHybridCharge.create(getChargeParams());
-        return stripeLightrailHybridChargeObject.getPaymentSummary();
     }
 
     public String getOrderCurrency() {

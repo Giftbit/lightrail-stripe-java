@@ -119,11 +119,10 @@ public class LightrailChargeTest {
     }
 
     @Test
-    public void GiftChargeInsufficientValueTest() throws IOException, AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException {
+    public void GiftChargeInsufficientValueTest() throws IOException, AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, InsufficientValueException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         int giftCodeValue = getGiftCodeValue();
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
