@@ -1,10 +1,9 @@
 package com.lightrail.model.stripe;
 
+import com.lightrail.model.business.LightrailTransaction;
+
 import java.util.HashMap;
 import java.util.Map;
-
-
-import com.lightrail.model.business.LightrailTransaction;
 
 
 public abstract class LightrailBaseTransaction {
@@ -20,6 +19,9 @@ public abstract class LightrailBaseTransaction {
 
     public String getId() {
         return transactionObject.getTransactionId();
+    }
+    public String getFullId() {
+        return transactionObject.getCardId() +"/"+transactionObject.getTransactionId();
     }
 
     public Map<String, Object> getMetadata() {

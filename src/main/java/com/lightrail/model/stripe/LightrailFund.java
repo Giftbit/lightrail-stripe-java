@@ -6,6 +6,7 @@ import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.StripeConstants;
+import com.lightrail.model.api.objects.RequestParameters;
 import com.lightrail.model.business.LightrailTransaction;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 public class LightrailFund extends LightrailBaseTransaction {
 
-    private LightrailFund(LightrailTransaction cardTransactionResponse) {
+    LightrailFund(LightrailTransaction cardTransactionResponse) {
         this.transactionObject = cardTransactionResponse;
     }
 
@@ -48,7 +49,7 @@ public class LightrailFund extends LightrailBaseTransaction {
         LightrailTransaction fundTransaction;
 
         try {
-            fundTransaction = LightrailTransaction.create(translateToLightrail(fundParams));
+            fundTransaction = LightrailTransaction.Create.create(translateToLightrail(fundParams));
         } catch (InsufficientValueException e) {
             throw new RuntimeException(e); //never happens since we are funding
         }
@@ -56,9 +57,10 @@ public class LightrailFund extends LightrailBaseTransaction {
         return new LightrailFund(fundTransaction);
     }
 
-    static Map<String, Object> translateToLightrail(Map<String, Object> fundParams) {
+    static RequestParameters translateToLightrail(Map<String, Object> fundParams) {
         fundParams = LightrailBaseTransaction.translateToLightrail(fundParams);
-        Map<String, Object> translatedParams = new HashMap<>(fundParams);
+        RequestParameters translatedParams = new RequestParameters();
+        translatedParams.putAll(fundParams);
         //amount --> value
         Integer fundAmount = (Integer) translatedParams.remove(StripeConstants.Parameters.AMOUNT);
         if (fundAmount <= 0)

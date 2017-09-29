@@ -5,13 +5,13 @@ import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.StripeConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.business.LightrailValue;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.lightrail.helpers.TestParams.getGiftCodeValue;
 import static org.junit.Assert.assertEquals;
 
 public class LightrailChargeTest {
@@ -119,13 +119,11 @@ public class LightrailChargeTest {
     }
 
     @Test
-    public void GiftChargeInsufficientValueTest() throws IOException, AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException {
+    public void GiftChargeInsufficientValueTest() throws IOException, AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, InsufficientValueException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
-        int giftCodeValue = giftValue.getCurrentValue();
+        int giftCodeValue = getGiftCodeValue();
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
         giftChargeParams.put(StripeConstants.Parameters.AMOUNT, giftCodeValue + 1);
