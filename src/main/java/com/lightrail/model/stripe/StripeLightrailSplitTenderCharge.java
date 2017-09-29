@@ -79,44 +79,6 @@ public class StripeLightrailSplitTenderCharge {
         return newLightrailShare;
     }
 
-//    private static int determineLightrailShare(Map<String, Object> chargeParams) throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-//        int transactionAmount = (Integer) chargeParams.get(StripeConstants.Parameters.AMOUNT);
-//        int lightrailShare = 0;
-//        LightrailCharge lightrailCharge;
-//        try {
-//            lightrailCharge = retrieveLightrailCharge(chargeParams);
-//        } catch (BadParameterException e) {
-//            lightrailCharge = null;
-//        } catch (CouldNotFindObjectException e) {
-//            lightrailCharge = null;
-//        }
-//
-//        if (lightrailCharge == null) { //it's not a replay
-//            Object lightrailCodeObject = chargeParams.get(LightrailConstants.Parameters.CODE);
-//            Object lightrailCardIdObject = chargeParams.get(LightrailConstants.Parameters.CARD_ID);
-//            if (lightrailCardIdObject == null && lightrailCodeObject == null) {
-//                return 0; //if no lightrail parameters are provided then lightrail's share will be zero
-//            }
-//
-//            RequestParameters lightrailSimulateParameters = new RequestParameters();
-//            lightrailSimulateParameters.putAll(chargeParams);
-//            removeStripeParams(lightrailSimulateParameters);
-//            LightrailCharge simulatedTransaction = LightrailCharge.simulate(lightrailSimulateParameters);
-//            lightrailShare = simulatedTransaction.getAmount();
-//
-//            if (lightrailShare == 0)
-//                return 0;
-//            lightrailShare = adjustForMinimumStripeTransactionValue(transactionAmount, lightrailShare);
-//
-//        } else { //it's a replay
-//            lightrailShare = lightrailCharge.getAmount();
-//            Integer originalTransactionAmount = ((Double) lightrailCharge.getMetadata().get(LightrailEcommerceConstants.HybridTransactionMetadata.SPLIT_TENDER_TOTAL)).intValue();
-//            if (transactionAmount != originalTransactionAmount)
-//                throw new BadParameterException("Idempotency Error. The parameters do not match the original transaction.");
-//        }
-//        return lightrailShare;
-//    }
-
     private static void removeStripeParams(Map<String, Object> params) {
         params.remove(StripeConstants.Parameters.CUSTOMER);
         params.remove(StripeConstants.Parameters.TOKEN);
@@ -144,7 +106,7 @@ public class StripeLightrailSplitTenderCharge {
         return new StripeLightrailSplitTenderCharge(lightrailCharge, stripeTransaction);
     }
 
-    public static StripeLightrailSplitTenderCharge simulate(Map<String, Object> chargeParams) throws AuthorizationException, CurrencyMismatchException, InsufficientValueException, IOException, CouldNotFindObjectException, ThirdPartyException {
+    public static SimulatedStripeLightrailSplitTenderCharge simulate(Map<String, Object> chargeParams) throws AuthorizationException, CurrencyMismatchException, InsufficientValueException, IOException, CouldNotFindObjectException, ThirdPartyException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 StripeConstants.Parameters.AMOUNT,
                 LightrailConstants.Parameters.CURRENCY

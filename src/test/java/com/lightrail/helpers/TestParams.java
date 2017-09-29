@@ -47,7 +47,7 @@ public class TestParams {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
         String cardId = GiftCard.retrieveCardDetailsByCode(properties.getProperty("happyPath.code")).getCardId();
-        GiftCard giftCard = GiftCard.retrieve(cardId);
+        GiftCard giftCard = GiftCard.retrieveByCardId(cardId);
         return LightrailCharge.simulateByCardId(cardId, giftCard.retrieveMaximumValue(), giftCard.getCurrency()).getAmount();
     }
 

@@ -74,7 +74,7 @@ Stripe.apiKey = properties.getProperty("stripe.testApiKey");
 
 CheckoutWithStripeAndLightrail checkout = new CheckoutWithStripeAndLightrail (375, "USD")
       .useGiftCode("<GIFT CODE>") 
-      //or .useLightrailCustomer("<LIGHTRAIL CUSTOMER ACC ID>")
+      useLightrailContact
       .useStripeToken("<STRIPE TOKEN>"); 
       //or .useStripeCustomer("<STRIPE CUSTOMER IS>"") 
 PaymentSummary paymentSummary = checkout.getPaymentSummary();

@@ -27,7 +27,7 @@ public class CheckoutWithStripeAndLightrailTest {
 
 
     private CheckoutWithStripeAndLightrail createCheckoutObject(int orderTotal, boolean addGiftCode, boolean addStripe)
-            throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, ThirdPartyPaymentException {
+            throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -37,7 +37,7 @@ public class CheckoutWithStripeAndLightrailTest {
 
         CheckoutWithStripeAndLightrail checkoutWithGiftCode = new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
         if (addGiftCode) {
-            checkoutWithGiftCode.useGiftCode(properties.getProperty("happyPath.code"));
+            checkoutWithGiftCode.useLightrailGiftCode(properties.getProperty("happyPath.code"));
         }
         if (addStripe) {
             int randomNum = ThreadLocalRandom.current().nextInt(0, 2);
@@ -50,7 +50,7 @@ public class CheckoutWithStripeAndLightrailTest {
     }
 
     @Test
-    public void checkoutWithGiftCodeHappyPathWalkThroughTest() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void checkoutWithGiftCodeHappyPathWalkThroughTest() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, ThirdPartyException {
 
         CheckoutWithStripeAndLightrail checkoutWithGiftCode = createCheckoutObject(7645, true, true);
         int giftCodeShare = checkoutWithGiftCode.checkout().getLightrailShare();
@@ -65,7 +65,7 @@ public class CheckoutWithStripeAndLightrailTest {
     }
 
     @Test
-    public void checkoutWithGiftCodeOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void checkoutWithGiftCodeOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -80,7 +80,7 @@ public class CheckoutWithStripeAndLightrailTest {
     }
 
     @Test
-    public void checkoutWithoutCreditCardInfoWhenNeededTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException {
+    public void checkoutWithoutCreditCardInfoWhenNeededTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -96,7 +96,7 @@ public class CheckoutWithStripeAndLightrailTest {
     }
 
     @Test
-    public void checkoutWithGiftCodeNeedsCreditCardTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void checkoutWithGiftCodeNeedsCreditCardTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -118,7 +118,7 @@ public class CheckoutWithStripeAndLightrailTest {
     }
 
     @Test
-    public void checkoutWithoutGiftCode() throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void checkoutWithoutGiftCode() throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -137,7 +137,7 @@ public class CheckoutWithStripeAndLightrailTest {
     }
 
     @Test
-    public void checkoutWithZeroedGiftCode() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void checkoutWithZeroedGiftCode() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -163,7 +163,7 @@ public class CheckoutWithStripeAndLightrailTest {
     }
 
     @Test
-    public void checkoutWithContactIdTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
+    public void checkoutWithContactIdTest() throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -180,7 +180,7 @@ public class CheckoutWithStripeAndLightrailTest {
                 customerCreditValue);
 
         CheckoutWithStripeAndLightrail checkout = new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
-        checkout.useLightrailCustomer(customerAccount.getContactId());
+        checkout.useLightrailContact(customerAccount.getContactId());
         checkout.useStripeToken(properties.getProperty("stripe.demoToken"));
 
         StripeLightrailSplitTenderCharge simulatedTx = checkout.simulate();
@@ -197,7 +197,7 @@ public class CheckoutWithStripeAndLightrailTest {
         customerAccount.createTransaction(lightrailShare);
 
         checkout = new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
-        checkout.useLightrailCustomer(customerAccount.getContactId());
+        checkout.useLightrailContact(customerAccount.getContactId());
         checkout.useStripeCustomer(properties.getProperty("stripe.demoCustomer"));
 
         simulatedTx = checkout.simulate();
@@ -210,7 +210,7 @@ public class CheckoutWithStripeAndLightrailTest {
         assertEquals(orderTotal, lightrailShare + creditCardShare);
     }
 
-    public void checkoutWithGiftCodeSample() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void checkoutWithGiftCodeSample() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         //set up your api keys
@@ -218,7 +218,7 @@ public class CheckoutWithStripeAndLightrailTest {
         Stripe.apiKey = properties.getProperty("stripe.testApiKey");
 
         CheckoutWithStripeAndLightrail checkoutWithGiftCode = new CheckoutWithStripeAndLightrail(7645, "USD")
-                .useGiftCode(properties.getProperty("happyPath.code"))
+                .useLightrailGiftCode(properties.getProperty("happyPath.code"))
                 .useStripeToken(properties.getProperty("stripe.demoToken"));
         StripeLightrailSplitTenderCharge simulatedCharge = checkoutWithGiftCode.simulate();
 

@@ -24,7 +24,7 @@ public class CheckoutWithStripeAndLightrail {
         setOrderTotal(orderTotal, orderCurrency);
     }
 
-    public CheckoutWithStripeAndLightrail useGiftCode(String giftCode) {
+    public CheckoutWithStripeAndLightrail useLightrailGiftCode(String giftCode) {
         this.giftCode = giftCode;
         return this;
     }
@@ -39,12 +39,12 @@ public class CheckoutWithStripeAndLightrail {
         return this;
     }
 
-    public CheckoutWithStripeAndLightrail useLightrailCustomer(String lightrailCustomerId) {
+    public CheckoutWithStripeAndLightrail useLightrailContact(String lightrailCustomerId) {
         this.lightrailContact = lightrailCustomerId;
         return this;
     }
 
-    public CheckoutWithStripeAndLightrail useGiftCardId(String giftCardId) {
+    public CheckoutWithStripeAndLightrail useLightrailCardId(String giftCardId) {
         this.giftCardId = giftCardId;
         return this;
     }
@@ -64,7 +64,7 @@ public class CheckoutWithStripeAndLightrail {
         return false;
     }
 
-    public StripeLightrailSplitTenderCharge simulate() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, ThirdPartyException {
+    public SimulatedStripeLightrailSplitTenderCharge simulate() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, ThirdPartyException {
         return StripeLightrailSplitTenderCharge.simulate(getChargeParams());
     }
 

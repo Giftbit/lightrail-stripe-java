@@ -51,40 +51,40 @@ public class LightrailCharge extends LightrailBaseTransaction {
         return translatedParams;
     }
 
-    public LightrailCharge refund(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
-        return new LightrailCharge(transactionObject.refund(userSuppliedId, metadata));
+    public LightrailFund refund(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+        return new LightrailFund(transactionObject.refund(userSuppliedId, metadata));
     }
 
     public LightrailCharge capture(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         return new LightrailCharge(transactionObject.capture(userSuppliedId, metadata));
     }
 
-    public LightrailCharge doVoid(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        return new LightrailCharge(transactionObject.doVoid(userSuppliedId, metadata));
+    public LightrailFund doVoid(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+        return new LightrailFund(transactionObject.doVoid(userSuppliedId, metadata));
     }
 
-    public LightrailCharge refund(Metadata metadata) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
-        return new LightrailCharge(transactionObject.refund(metadata));
+    public LightrailFund refund(Metadata metadata) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+        return new LightrailFund(transactionObject.refund(metadata));
     }
 
     public LightrailCharge capture(Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         return new LightrailCharge(transactionObject.capture(metadata));
     }
 
-    public LightrailCharge doVoid(Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        return new LightrailCharge(transactionObject.doVoid(metadata));
+    public LightrailFund doVoid(Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+        return new LightrailFund(transactionObject.doVoid(metadata));
     }
 
-    public LightrailCharge refund() throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
-        return new LightrailCharge(transactionObject.refund());
+    public LightrailFund refund() throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+        return new LightrailFund(transactionObject.refund());
     }
 
     public LightrailCharge capture() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         return new LightrailCharge(transactionObject.capture());
     }
 
-    public LightrailCharge doVoid() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        return new LightrailCharge(transactionObject.doVoid());
+    public LightrailFund doVoid() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+        return new LightrailFund(transactionObject.doVoid());
     }
 
     public static LightrailCharge createPendingByContact(String customerAccountId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {

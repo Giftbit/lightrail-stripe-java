@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class LightrailFund extends LightrailBaseTransaction {
 
-    private LightrailFund(LightrailTransaction cardTransactionResponse) {
+    LightrailFund(LightrailTransaction cardTransactionResponse) {
         this.transactionObject = cardTransactionResponse;
     }
 

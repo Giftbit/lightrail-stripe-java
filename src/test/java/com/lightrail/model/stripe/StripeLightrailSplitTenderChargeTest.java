@@ -29,7 +29,7 @@ public class StripeLightrailSplitTenderChargeTest {
     }
 
     @Test
-    public void hybridChargeHappyPathTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
+    public void hybridChargeHappyPathTest() throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -58,7 +58,7 @@ public class StripeLightrailSplitTenderChargeTest {
     }
 
     @Test
-    public void hybridChargeHappyPathWithCustomerIdTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
+    public void hybridChargeHappyPathWithCustomerIdTest() throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -104,7 +104,7 @@ public class StripeLightrailSplitTenderChargeTest {
     }
 
     @Test
-    public void hybridChargeGiftCodeOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void hybridChargeGiftCodeOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -122,7 +122,7 @@ public class StripeLightrailSplitTenderChargeTest {
     }
 
     @Test
-    public void hybridChargeCreditCardOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException, ThirdPartyException {
+    public void hybridChargeCreditCardOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -160,7 +160,7 @@ public class StripeLightrailSplitTenderChargeTest {
     }
 
     @Test
-    public void splitTransactionValueWithStripeMinimumTransactionValueInMindTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
+    public void splitTransactionValueWithStripeMinimumTransactionValueInMindTest() throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -184,7 +184,7 @@ public class StripeLightrailSplitTenderChargeTest {
     }
 
     @Test
-    public void giftCodeValueTooSmall() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
+    public void giftCodeValueTooSmall() throws IOException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -213,7 +213,7 @@ public class StripeLightrailSplitTenderChargeTest {
     }
 
     @Test
-    public void hybridChargeMetadataTest () throws IOException, CouldNotFindObjectException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, ThirdPartyPaymentException, ThirdPartyException {
+    public void hybridChargeMetadataTest () throws IOException, CouldNotFindObjectException, AuthorizationException, CurrencyMismatchException, InsufficientValueException, ThirdPartyException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
