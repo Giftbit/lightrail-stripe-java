@@ -7,7 +7,7 @@ import com.lightrail.helpers.LightrailEcommerceConstants;
 import com.lightrail.helpers.StripeConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.business.LightrailCustomerAccount;
+import com.lightrail.model.business.LightrailContact;
 import com.stripe.Stripe;
 import org.junit.Test;
 
@@ -68,7 +68,7 @@ public class StripeLightrailSplitTenderChargeTest {
         String currency = "USD";
 
         int customerCreditValue = 300;
-        LightrailCustomerAccount customerAccount = LightrailCustomerAccount.create("test@test.ca", "Test", "McTest");
+        LightrailContact customerAccount = LightrailContact.create("test@test.ca", "Test", "McTest");
         customerAccount.addCurrency(currency, customerCreditValue);
 
         Map<String, Object> hybridChargeParams = new HashMap<>();

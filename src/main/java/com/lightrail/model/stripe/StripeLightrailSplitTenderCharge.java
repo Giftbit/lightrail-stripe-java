@@ -6,7 +6,7 @@ import com.lightrail.helpers.LightrailEcommerceConstants;
 import com.lightrail.helpers.StripeConstants;
 import com.lightrail.model.api.objects.Metadata;
 import com.lightrail.model.api.objects.RequestParameters;
-import com.lightrail.model.business.LightrailCustomerAccount;
+import com.lightrail.model.business.LightrailContact;
 import com.stripe.exception.*;
 import com.stripe.model.Charge;
 import com.stripe.net.RequestOptions;
@@ -114,7 +114,7 @@ public class StripeLightrailSplitTenderCharge {
 
         RequestParameters requestParameters = new RequestParameters();
         requestParameters.putAll(chargeParams);
-        chargeParams = LightrailCustomerAccount.handleContact(requestParameters);
+        chargeParams = LightrailContact.handleContact(requestParameters);
         Integer transactionAmount = (Integer) chargeParams.get(StripeConstants.Parameters.AMOUNT);
         String currency = (String) chargeParams.get(LightrailConstants.Parameters.CURRENCY);
 
