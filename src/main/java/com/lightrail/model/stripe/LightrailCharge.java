@@ -87,8 +87,8 @@ public class LightrailCharge extends LightrailBaseTransaction {
         return new LightrailFund(transactionObject.doVoid());
     }
 
-    public static LightrailCharge createPendingByContact(String customerAccountId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-        return createByContact(customerAccountId, amount, currency, false);
+    public static LightrailCharge createPendingByContact(String contactId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        return createByContact(contactId, amount, currency, false);
     }
 
     public static LightrailCharge createByContact(String contactId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {

@@ -4,7 +4,7 @@ import com.lightrail.exceptions.*;
 import com.lightrail.helpers.StripeConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.business.LightrailCustomerAccount;
+import com.lightrail.model.business.LightrailContact;
 import com.stripe.Stripe;
 import org.junit.Test;
 
@@ -173,7 +173,7 @@ public class CheckoutWithStripeAndLightrailTest {
         String orderCurrency = "USD";
 
         int customerCreditValue = 300;
-        LightrailCustomerAccount customerAccount = LightrailCustomerAccount.create("test@test.ca",
+        LightrailContact customerAccount = LightrailContact.create("test@test.ca",
                 "Test",
                 "McTest",
                 orderCurrency,
