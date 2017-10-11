@@ -177,7 +177,7 @@ The following dependency is also necessary if you want to run the unit tests.
 
 ### 2.0.0
 
-- Fully upgraded based on the new Lightrail Java library 2.0.0 and supports simulated split-tender transactions.
+- Upgrading to use the new Lightrail Java library 2.0.0 and supporting simulated split-tender transactions.
 
 ### 1.1.0
 
