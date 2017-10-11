@@ -17,7 +17,7 @@ The`StripeLightrailSplitTenderCharge` class resembles the interface of a Stripe 
 
 - `cardId`, specifying a Gift Card by its `cardId`, or
 
-- `contact`, specifying a Contact by its `contactId`. 
+- `contact`, specifying a Contact by its `contactId`. This will eventually be translated as the `cardId` of the corresponding Account Card for the transaction currency. 
 
 The Stripe parameter could be:
 
@@ -45,27 +45,30 @@ params.put("currency", orderCurrency);
 params.put("source", stripeToken);
 params.put("code", giftCode);
 
-SimulatedStripeLightrailSplitTenderCharge simulatedCharge =
-  										StripeLightrailSplitTenderCharge.simulate(params);
+SimulatedStripeLightrailSplitTenderCharge simulatedCharge = StripeLightrailSplitTenderCharge.simulate(params);
 
 int creditCardShare = simulatedCharge.getStripeShare();
 int giftCodeShare = simulatedCharge.getLightrailShare();
-System.out.println(String.format("Will charge %s%s on your gift card and %s%s on your credit card..", orderCurrency, giftCodeShare, orderCurrency, creditCardShare));
+System.out.println(
+  String.format("Will charge %s%s on your gift card and %s%s on your credit card..",
+                orderCurrency, 
+                giftCodeShare, 
+                orderCurrency, 
+                creditCardShare));
 
 StripeLightrailSplitTenderCharge committedCharge = simulatedCharge.commit();
-
 ```
 
-If you don't pass any Lightrail parameters, the entire transaction will be charged to Stripe. Similarly, if you don't provide any Stripe parameters, the library will attempt to charge the entire transaction to Lightrail. In that case, if the value of the Gift Card or Account Card is not enough to cover the entire transaction amount, you will receive a `BadParameterException` asking you to provide a Stripe parameter.
+If you do not provide any Lightrail parameters, the entire transaction will be charged to Stripe. Similarly, if you do not provide any Stripe parameters, the library will attempt to charge the entire transaction to Lightrail. In that case, if the value of the Card is not enough to cover the entire transaction amount, you will receive a `BadParameterException` asking you to provide a Stripe parameter.
 
-When both a Lightrail and a Stripe parameter are provided, the library will try to split the payment, in such a way that Lightrail contributes to the payment as much as possible. This usually means:
+When both of Lightrail and Stripe parameters are provided, the library will try to split the payment, in such a way that Lightrail contributes to the payment to the maximum possible extent. This usually means:
 
-- If the Lightrail value is sufficient, the entire transaction will be charged on the Gift Card or Account Card.
+- If the Lightrail value is sufficient, the entire transaction will be charged to the Lightrail Card.
 
 
-- If the transaction amount is larger than the Lightrail value, the remainder will be charged to Stripe —unless the remainder is too small for a Stripe transaction in which case the split point is shifted just enough for the Stripe share of the transaction to meet the minimum requirements.
+- If the transaction amount is larger than the available Lightrail value, the remainder will be charged to Stripe (except when the remainder is too small for a Stripe transaction, in which case the split point is shifted just enough for the Stripe share of the transaction to meet the minimum requirements).
 
-The `simulate()` method returns a `SimulatedStripeLightrailSplitTenderCharge` object which demonstrates the intended plan for splitting the transaction between Lightrail and Stripe. You can use this for showing the summary of the payment to the user to confirm.
+The `simulate()` method returns a `SimulatedStripeLightrailSplitTenderCharge` object which demonstrates the intended plan for splitting the transaction between Lightrail and Stripe. You can use this object for showing the summary of the payment to the user to confirm. After the user confirms the payment breakdown, call the `commit` method to finalize the transaction.
 
 ### Order Checkout Using `CheckoutWithStripeAndLightrail`
 
@@ -84,19 +87,23 @@ Lightrail.apiKey = "...";
 String stripeToken = "...";
 String giftCode = "...";
 CheckoutWithStripeAndLightrail checkoutWithGiftCode = 
-  					new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
-        checkoutWithGiftCode.useLightrailGiftCode(giftCode);
-        //or: checkoutWithGiftCode.useLightrailCardId("...");
-        //or: checkoutWithGiftCode.useLightrailContact("...");
-        checkoutWithGiftCode.useStripeToken(stripeToken);
-        //or: checkoutWithGiftCode.useStripeCustomer("...");
+                               new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
+checkoutWithGiftCode.useLightrailGiftCode(giftCode);
+//or: checkoutWithGiftCode.useLightrailCardId("...");
+//or: checkoutWithGiftCode.useLightrailContact("...");
+checkoutWithGiftCode.useStripeToken(stripeToken);
+//or: checkoutWithGiftCode.useStripeCustomer("...");
 
-SimulatedStripeLightrailSplitTenderCharge simulatedCharge =
-  										checkoutWithGiftCode.simulate();
+SimulatedStripeLightrailSplitTenderCharge simulatedCharge = checkoutWithGiftCode.simulate();
 int creditCardShare = simulatedCharge.getStripeShare();
 int giftCodeShare = simulatedCharge.getLightrailShare();
 
-System.out.println(String.format("Will charge %s%s on your gift card and %s%s on your credit card..", orderCurrency, giftCodeShare, orderCurrency, creditCardShare));
+System.out.println(
+  String.format("Will charge %s%s on your gift card and %s%s on your credit card..", 
+                orderCurrency,
+                giftCodeShare,
+                orderCurrency,
+                creditCardShare));
 
 StripeLightrailSplitTenderCharge committedCharge = simulatedCharge.commit();
 ```
@@ -113,7 +120,7 @@ You can add this library as a dependency in your `maven` `POM` file as:
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-stripe-client</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
@@ -145,7 +152,7 @@ The only dependency of this library are `lightrail-client` and `stripe-java`.
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.0.0</version>
 </dependency>
 <dependency>
   <groupId>com.stripe</groupId>
