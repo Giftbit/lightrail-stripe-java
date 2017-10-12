@@ -56,12 +56,8 @@ public class CheckoutWithStripeAndLightrail {
     }
 
     public boolean needsCreditCardPayment() throws IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException, ThirdPartyException {
-        try {
-            StripeLightrailSplitTenderCharge.simulate(getChargeParams()).getStripeCharge();
-        } catch (BadParameterException e) {
-            return true;
-        }
-        return false;
+        return (StripeLightrailSplitTenderCharge.simulate(getChargeParams()).getStripeCharge() != null);
+
     }
 
     public SimulatedStripeLightrailSplitTenderCharge simulate() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, ThirdPartyException {
@@ -69,11 +65,8 @@ public class CheckoutWithStripeAndLightrail {
     }
 
     public StripeLightrailSplitTenderCharge checkout() throws IOException, AuthorizationException, ThirdPartyException, CurrencyMismatchException, CouldNotFindObjectException, InsufficientValueException {
-        StripeLightrailSplitTenderCharge simulatedTx = simulate();
-        if (simulatedTx instanceof SimulatedStripeLightrailSplitTenderCharge)
-            return ((SimulatedStripeLightrailSplitTenderCharge) simulatedTx).commit();
-        else
-            return simulatedTx;
+        SimulatedStripeLightrailSplitTenderCharge simulatedTx = simulate();
+        return simulatedTx.commit();
     }
 
     private Map<String, Object> getChargeParams() {
