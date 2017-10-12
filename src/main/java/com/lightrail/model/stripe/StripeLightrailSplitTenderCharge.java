@@ -35,7 +35,7 @@ public class StripeLightrailSplitTenderCharge {
     }
 
     public String getIdempotencyKey() {
-        return (lightrailCharge!= null) ? lightrailCharge.getIdempotencyKey() : null;
+        return (lightrailCharge != null) ? lightrailCharge.getIdempotencyKey() : null;
     }
 
     private static Map<String, Object> getStripeParams(int amount, Map<String, Object> chargeParams, String lightrailTxFullId) {
@@ -151,8 +151,7 @@ public class StripeLightrailSplitTenderCharge {
         }
         stripeShare = transactionAmount - lightrailShare;
         if (stripeShare != 0) {
-            getStripeParams(stripeShare, chargeParams, null);
-
+            //getStripeParams(stripeShare, chargeParams, null);
 
             stripeCharge = new Charge();
             stripeCharge.setCurrency(currency);
@@ -204,10 +203,10 @@ public class StripeLightrailSplitTenderCharge {
                     stripeCharge = Charge.create(getStripeParams(stripeShare, chargeParams, lightrailCharge.getFullId()), stripeRequestOptions);
                 } catch (Exception e) {
                     lightrailCharge.doVoid();
-                    if (e instanceof StripeException)
-                        throw new ThirdPartyException(e);
+                    if (e instanceof BadParameterException)
+                        throw (BadParameterException) e;
                     else
-                        throw new RuntimeException(e);
+                        throw new ThirdPartyException(e);
                 }
                 lightrailCapturedCharge = lightrailCharge.capture(getLightrailMetadata(transactionAmount, stripeCharge.getId()));
             }
@@ -215,7 +214,10 @@ public class StripeLightrailSplitTenderCharge {
             try {
                 stripeCharge = Charge.create(getStripeParams(stripeShare, chargeParams, null));
             } catch (Exception e) {
-                throw new ThirdPartyException(e);
+                if (e instanceof BadParameterException)
+                    throw (BadParameterException) e;
+                else
+                    throw new ThirdPartyException(e);
             }
         }
 

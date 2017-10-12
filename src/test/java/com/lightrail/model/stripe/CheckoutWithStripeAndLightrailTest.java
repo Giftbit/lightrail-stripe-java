@@ -157,9 +157,9 @@ public class CheckoutWithStripeAndLightrailTest {
             StripeLightrailSplitTenderCharge checkout = checkoutWithGiftCode.checkout();
         } catch (Exception e) {
             assertEquals(BadParameterException.class.getName(), e.getClass().getName());
+        } finally {
+            returnFundsToCode(originalGiftValue);
         }
-
-        returnFundsToCode(originalGiftValue);
     }
 
     @Test
