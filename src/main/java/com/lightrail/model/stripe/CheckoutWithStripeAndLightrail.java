@@ -13,7 +13,8 @@ public class CheckoutWithStripeAndLightrail {
     private int orderTotal;
     private String orderCurrency;
     private String giftCode = null;
-    private String giftCardId = null;
+    private String cardId = null;
+    private String lightrailShopperId = null;
     private String lightrailContact = null;
     private String stripeToken = null;
     private String stripeCustomer = null;
@@ -44,8 +45,13 @@ public class CheckoutWithStripeAndLightrail {
         return this;
     }
 
+    public CheckoutWithStripeAndLightrail useLightrailShopperId(String lightrailShopperId) {
+        this.lightrailShopperId = lightrailShopperId;
+        return this;
+    }
+
     public CheckoutWithStripeAndLightrail useLightrailCardId(String giftCardId) {
-        this.giftCardId = giftCardId;
+        this.cardId = giftCardId;
         return this;
     }
 
@@ -76,11 +82,14 @@ public class CheckoutWithStripeAndLightrail {
         if (giftCode != null) {
             chargeParams.put(LightrailConstants.Parameters.CODE, giftCode);
         }
-        if (giftCardId != null) {
-            chargeParams.put(LightrailConstants.Parameters.CARD_ID, giftCardId);
+        if (cardId != null) {
+            chargeParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
         }
         if (lightrailContact != null) {
             chargeParams.put(LightrailConstants.Parameters.CONTACT, lightrailContact);
+        }
+        if (lightrailShopperId != null) {
+            chargeParams.put(LightrailConstants.Parameters.SHOPPER_ID, lightrailShopperId);
         }
         if (stripeToken != null) {
             chargeParams.put(StripeConstants.Parameters.TOKEN, stripeToken);

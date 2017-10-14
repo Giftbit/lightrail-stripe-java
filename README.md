@@ -13,11 +13,10 @@ If you are looking for specific use-cases or other languages, check out the *Int
 
 The`StripeLightrailSplitTenderCharge` class resembles the interface of a Stripe `Charge` class and transparently splits the transaction between Lightrail and Stripe. The Lightrail parameter could be one of the following:
 
-- `code`, specifying a Gift Card by its `fullcode`, 
-
-- `cardId`, specifying a Gift Card by its `cardId`, or
-
-- `contact`, specifying a Contact by its `contactId`. This will eventually be translated as the `cardId` of the corresponding Account Card for the transaction currency. 
+- `cardId`, specifying a Card by its `cardId`, 
+- `contact`, specifying a Contact by its `contactId`. This leads to creating the transaction against the Contact's respective Account Card for the specified currency,
+- `shopperId`, specifying a Contact by its `userSuppliedId`, or
+- `code`, specifying a Gift Card by its `fullcode`.
 
 The Stripe parameter could be:
 
@@ -35,31 +34,30 @@ String orderCurrency = "USD";
 Stripe.apiKey = "...";
 Lightrail.apiKey = "...";
 
-//get the stripe token and the gift code
 String stripeToken = "...";
-String giftCode = "...";
+String shopperId = "..."; //customer's identifier in your system.
 
 Map<String, Object> params = new HashMap<String, Object>();
 params.put("amount", orderTotal);
 params.put("currency", orderCurrency);
 params.put("source", stripeToken);
-params.put("code", giftCode);
+params.put("shopperId", shopperId);
 
 SimulatedStripeLightrailSplitTenderCharge simulatedCharge = StripeLightrailSplitTenderCharge.simulate(params);
 
 int creditCardShare = simulatedCharge.getStripeShare();
-int giftCodeShare = simulatedCharge.getLightrailShare();
+int accountShare = simulatedCharge.getLightrailShare();
 System.out.println(
-  String.format("Will charge %s%s on your gift card and %s%s on your credit card..",
+  String.format("Will charge %s%s on the account card and %s%s on the credit card..",
                 orderCurrency, 
-                giftCodeShare, 
+                accountShare, 
                 orderCurrency, 
                 creditCardShare));
 
 StripeLightrailSplitTenderCharge committedCharge = simulatedCharge.commit();
 ```
 
-If you do not provide any Lightrail parameters, the entire transaction will be charged to Stripe. Similarly, if you do not provide any Stripe parameters, the library will attempt to charge the entire transaction to Lightrail. In that case, if the value of the Card is not enough to cover the entire transaction amount, you will receive a `BadParameterException` asking you to provide a Stripe parameter.
+If you do not provide any Lightrail parameters, the entire transaction will be charged to Stripe. Similarly, if you do not provide any Stripe parameters, the library will attempt to charge the entire transaction to Lightrail. In that case, if the value of the Card is not enough to cover the entire transaction amount, you will receive a `BadParameterException` stating that you must provide a Stripe parameter for this transaction.
 
 When both of Lightrail and Stripe parameters are provided, the library will try to split the payment, in such a way that Lightrail contributes to the payment to the maximum possible extent. This usually means:
 
@@ -70,14 +68,31 @@ When both of Lightrail and Stripe parameters are provided, the library will try 
 
 The `simulate()` method returns a `SimulatedStripeLightrailSplitTenderCharge` object which demonstrates the intended plan for splitting the transaction between Lightrail and Stripe. You can use this object for showing the summary of the payment to the user to confirm. After the user confirms the payment breakdown, call the `commit` method to finalize the transaction.
 
+If you want to specify the breakdown of the split-tender manually (for example in cases where the customer gets to specify how much from their account they would like to spend in the transaction), you can use the following method:
+
+```java
+String stripeToken = "...";
+String shopperId = "..."; //customer's identifier in your system.
+
+int stripeShare = ...; //specify the breakdown manually
+int lightrailShare = ...;
+
+Map<String, Object> params = new HashMap<String, Object>();
+params.put("amount", stripeShare + lightrailShare);
+params.put("currency", "USD");
+params.put("source", stripeToken);
+params.put("shopperId", shopperId);
+StripeLightrailSplitTenderCharge.create(params, stripeShare, lightrailShare);
+```
+
 ### Order Checkout Using `CheckoutWithStripeAndLightrail`
 
 This class provides a wrapper around `StripeLightrailSplitTenderCharge` with a more straightforward interface for developers who are not familiar with Stripe's Java library. 
 
 ```java
 //this is your order
-int orderTotal = 7505;
-String orderCurrency = "USD";
+int total = 7505;
+String currency = "USD";
 
 //set up your API keys
 Stripe.apiKey = "...";
@@ -85,23 +100,24 @@ Lightrail.apiKey = "...";
 
 //get the stripe token and the gift code
 String stripeToken = "...";
-String giftCode = "...";
-CheckoutWithStripeAndLightrail checkoutWithGiftCode = 
-                               new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
-checkoutWithGiftCode.useLightrailGiftCode(giftCode);
+String shopperId = "...";
+CheckoutWithStripeAndLightrail checkout = new CheckoutWithStripeAndLightrail(total, currency);
+checkoutWithGiftCode.useLightrailShopperId(shopperId);
 //or: checkoutWithGiftCode.useLightrailCardId("...");
 //or: checkoutWithGiftCode.useLightrailContact("...");
+//or: checkoutWithGiftCode.useLightrailGiftCode("...");
+
 checkoutWithGiftCode.useStripeToken(stripeToken);
 //or: checkoutWithGiftCode.useStripeCustomer("...");
 
 SimulatedStripeLightrailSplitTenderCharge simulatedCharge = checkoutWithGiftCode.simulate();
 int creditCardShare = simulatedCharge.getStripeShare();
-int giftCodeShare = simulatedCharge.getLightrailShare();
+int accountShare = simulatedCharge.getLightrailShare();
 
 System.out.println(
-  String.format("Will charge %s%s on your gift card and %s%s on your credit card..", 
+  String.format("Will charge %s%s on the account card and %s%s on the credit card.", 
                 orderCurrency,
-                giftCodeShare,
+                accountShare,
                 orderCurrency,
                 creditCardShare));
 
@@ -152,7 +168,7 @@ The only dependency of this library are `lightrail-client` and `stripe-java`.
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1-SNAPSHOT</version>
 </dependency>
 <dependency>
   <groupId>com.stripe</groupId>
@@ -174,6 +190,10 @@ The following dependency is also necessary if you want to run the unit tests.
 ```
 
 ## Changelog ## 
+
+### 2.0.1
+
+- Supporting `shopperId` for an easier checkout process.
 
 ### 2.0.0
 
