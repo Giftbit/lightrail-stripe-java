@@ -5,7 +5,7 @@ Lightrail is a modern platform for digital account credits, gift cards, promotio
 If you are looking for specific use-cases or other languages, check out the *Integrations* section of the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 ## Features ##
-- Simple order checkout which supports Lightrail gift card redemption or account credits alongside a Stripe payment.
+- Simple order checkout supporting split-tender transactions with Lightrail redemption alongside a Stripe payment.
 
 ## Usage ##
 
@@ -100,11 +100,11 @@ Lightrail.apiKey = "...";
 
 //get the stripe token and the gift code
 String stripeToken = "...";
-String shopperId = "...";
+String shopperId = "..."; //customer's identifier in your system.
 CheckoutWithStripeAndLightrail checkout = new CheckoutWithStripeAndLightrail(total, currency);
 checkoutWithGiftCode.useLightrailShopperId(shopperId);
-//or: checkoutWithGiftCode.useLightrailCardId("...");
 //or: checkoutWithGiftCode.useLightrailContact("...");
+//or: checkoutWithGiftCode.useLightrailCardId("...");
 //or: checkoutWithGiftCode.useLightrailGiftCode("...");
 
 checkoutWithGiftCode.useStripeToken(stripeToken);
