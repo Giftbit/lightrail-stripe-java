@@ -208,6 +208,23 @@ public class CheckoutWithStripeAndLightrailTest {
         creditCardShare = charge.getStripeShare();
 
         assertEquals(orderTotal, lightrailShare + creditCardShare);
+
+        customerAccount.createTransaction(lightrailShare);//return the funds to the Account Card
+        //now test with shopper Id
+
+        checkout = new CheckoutWithStripeAndLightrail(orderTotal, orderCurrency);
+        checkout.useLightrailShopperId(customerAccount.getShopperId());
+        checkout.useStripeToken(properties.getProperty("stripe.demoToken"));
+
+        simulatedTx = checkout.simulate();
+        lightrailShare = simulatedTx.getLightrailShare();
+        assertEquals(customerCreditValue, lightrailShare);
+
+        charge = checkout.checkout();
+        assertEquals(customerCreditValue, lightrailShare);
+
+        creditCardShare = charge.getStripeShare();
+        assertEquals(orderTotal, lightrailShare + creditCardShare);
     }
 
     public void checkoutWithGiftCodeSample() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException, ThirdPartyException {
